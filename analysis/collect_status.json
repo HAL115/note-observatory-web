@@ -1,0 +1,15 @@
+{
+ "runs": [
+  {
+   "kind": "series",
+   "started": "2026-11-10 02:43",
+   "finished": "2026-11-10 02:44",
+   "pages": 12,
+   "items": 564,
+   "errors": [],
+   "files": [
+    "data/raw/series/note_観測ログ_raw_2026-11-10_0243.csv"
+   ]
+  }
+ ]
+}
