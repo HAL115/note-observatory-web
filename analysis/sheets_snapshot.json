@@ -1,0 +1,808 @@
+{
+ "source": "スプレッドシート「note観測ログ（halsy）」の要点・小カテ（Apps Script、毎日18:44ごろ。ログアウト）",
+ "from": "2026-10-30 18:44",
+ "to": "2026-11-06 18:44",
+ "copied_at": "2026-11-07 14:50",
+ "note": "直近7日の写し。小カテは各タグの人気のページに出る関連キーワード。件数は、その言葉のページに出ている記事の件数。1日の増え方は、期間の最初の回と最後の回の差を日数で割ったもの。",
+ "tags": [
+  {
+   "tag": "note副業",
+   "total": 10578,
+   "total_per_day": 36,
+   "category": "ビジネス＞収益化",
+   "words": [
+    {
+     "word": "副業トラブル",
+     "pos": 1,
+     "count": 307,
+     "per_day": 0.4
+    },
+    {
+     "word": "副業ノウハウ",
+     "pos": 2,
+     "count": 1146,
+     "per_day": 1.1
+    },
+    {
+     "word": "副業体験談",
+     "pos": 3,
+     "count": 563,
+     "per_day": 1.6
+    },
+    {
+     "word": "副業始め方",
+     "pos": 4,
+     "count": 627,
+     "per_day": -0.1
+    },
+    {
+     "word": "副業市場",
+     "pos": 5,
+     "count": 230,
+     "per_day": 0.3
+    },
+    {
+     "word": "副業戦略",
+     "pos": 6,
+     "count": 1116,
+     "per_day": 0.3
+    },
+    {
+     "word": "有料記事販売",
+     "pos": 7,
+     "count": 1033,
+     "per_day": 2.3
+    },
+    {
+     "word": "プロンプト販売",
+     "pos": 8,
+     "count": 2390,
+     "per_day": 2.1
+    },
+    {
+     "word": "記事量産",
+     "pos": 9,
+     "count": 1441,
+     "per_day": 1.0
+    },
+    {
+     "word": "在宅副業",
+     "pos": 10,
+     "count": 15067,
+     "per_day": 29.3
+    }
+   ]
+  },
+  {
+   "tag": "note初心者",
+   "total": 64536,
+   "total_per_day": 90,
+   "category": "ビジネス＞収益化",
+   "words": [
+    {
+     "word": "noteの使い方",
+     "pos": 1,
+     "count": 1519,
+     "per_day": 0.9
+    },
+    {
+     "word": "noteの始め方",
+     "pos": 2,
+     "count": 738,
+     "per_day": 1.1
+    },
+    {
+     "word": "note攻略",
+     "pos": 3,
+     "count": 2985,
+     "per_day": 1.1
+    },
+    {
+     "word": "はじめてのnote",
+     "pos": 4,
+     "count": 38590,
+     "per_day": 35.3
+    },
+    {
+     "word": "初めてのnote",
+     "pos": 5,
+     "count": 7974,
+     "per_day": 2.1
+    },
+    {
+     "word": "文章執筆",
+     "pos": 6,
+     "count": 5584,
+     "per_day": 14.0
+    }
+   ]
+  },
+  {
+   "tag": "副業",
+   "total": 1640640,
+   "total_per_day": null,
+   "category": "",
+   "words": [
+    {
+     "word": "40代副業",
+     "pos": 1,
+     "count": 1181,
+     "per_day": 2.0
+    },
+    {
+     "word": "50代副業",
+     "pos": 2,
+     "count": 1121,
+     "per_day": 6.3
+    },
+    {
+     "word": "60代副業",
+     "pos": 3,
+     "count": 141,
+     "per_day": -0.1
+    },
+    {
+     "word": "AIアフィリエイト",
+     "pos": 4,
+     "count": 787,
+     "per_day": 2.4
+    },
+    {
+     "word": "AIコンテンツ販売",
+     "pos": 5,
+     "count": 459,
+     "per_day": 0.4
+    },
+    {
+     "word": "AI副業",
+     "pos": 6,
+     "count": 101378,
+     "per_day": 290.3
+    },
+    {
+     "word": "AI副業チャレンジ",
+     "pos": 7,
+     "count": 195,
+     "per_day": 0.3
+    },
+    {
+     "word": "AI音楽副業",
+     "pos": 9,
+     "count": 137,
+     "per_day": 0.3
+    },
+    {
+     "word": "ASPアフィリエイト",
+     "pos": 10,
+     "count": 258,
+     "per_day": 0.6
+    }
+   ]
+  },
+  {
+   "tag": "在宅ワーク",
+   "total": 228055,
+   "total_per_day": null,
+   "category": "",
+   "words": [
+    {
+     "word": "ウェブライター",
+     "pos": 1,
+     "count": 2481,
+     "per_day": 0.6
+    },
+    {
+     "word": "シュフティ",
+     "pos": 2,
+     "count": 438,
+     "per_day": 0.4
+    },
+    {
+     "word": "ママワークス",
+     "pos": 3,
+     "count": 877,
+     "per_day": 1.6
+    },
+    {
+     "word": "在宅ワークママ",
+     "pos": 4,
+     "count": 1892,
+     "per_day": 0.6
+    },
+    {
+     "word": "在宅事務",
+     "pos": 5,
+     "count": 458,
+     "per_day": 2.9
+    },
+    {
+     "word": "翻訳副業",
+     "pos": 6,
+     "count": 189,
+     "per_day": 0.3
+    },
+    {
+     "word": "WEBライター",
+     "pos": 7,
+     "count": 7381,
+     "per_day": 0.6
+    },
+    {
+     "word": "ママ副業",
+     "pos": 8,
+     "count": 2102,
+     "per_day": 2.6
+    },
+    {
+     "word": "ライティング副業",
+     "pos": 9,
+     "count": 601,
+     "per_day": 1.3
+    },
+    {
+     "word": "内職",
+     "pos": 10,
+     "count": 5785,
+     "per_day": 2.3
+    }
+   ]
+  },
+  {
+   "tag": "生成AI",
+   "total": 615765,
+   "total_per_day": null,
+   "category": "",
+   "words": [
+    {
+     "word": "3Dモデル生成",
+     "pos": 1,
+     "count": 467,
+     "per_day": 1.0
+    },
+    {
+     "word": "A2A",
+     "pos": 2,
+     "count": 597,
+     "per_day": 0.4
+    },
+    {
+     "word": "AI Studio",
+     "pos": 3,
+     "count": 844,
+     "per_day": 1.3
+    },
+    {
+     "word": "AI VTuber",
+     "pos": 4,
+     "count": 387,
+     "per_day": 1.4
+    },
+    {
+     "word": "AIO",
+     "pos": 5,
+     "count": 2446,
+     "per_day": 7.3
+    },
+    {
+     "word": "AIP",
+     "pos": 6,
+     "count": 774,
+     "per_day": 0.7
+    },
+    {
+     "word": "AISEO",
+     "pos": 7,
+     "count": 153,
+     "per_day": 0.1
+    },
+    {
+     "word": "AITuber",
+     "pos": 8,
+     "count": 746,
+     "per_day": 0.1
+    },
+    {
+     "word": "AIillustration",
+     "pos": 10,
+     "count": 302,
+     "per_day": 0.4
+    }
+   ]
+  },
+  {
+   "tag": "起業",
+   "total": 298757,
+   "total_per_day": 114,
+   "category": "キャリア＞起業・独立",
+   "words": [
+    {
+     "word": "50代起業",
+     "pos": 2,
+     "count": 953,
+     "per_day": 1.3
+    },
+    {
+     "word": "AI起業",
+     "pos": 3,
+     "count": 912,
+     "per_day": 4.0
+    },
+    {
+     "word": "SNS起業",
+     "pos": 4,
+     "count": 1600,
+     "per_day": 0.9
+    },
+    {
+     "word": "おうち起業",
+     "pos": 5,
+     "count": 1461,
+     "per_day": 0.4
+    },
+    {
+     "word": "お家起業",
+     "pos": 6,
+     "count": 248,
+     "per_day": -0.1
+    },
+    {
+     "word": "ひとり起業家",
+     "pos": 7,
+     "count": 1155,
+     "per_day": 0.9
+    },
+    {
+     "word": "アラフィフ起業",
+     "pos": 9,
+     "count": 285,
+     "per_day": 0.9
+    },
+    {
+     "word": "オンライン起業",
+     "pos": 10,
+     "count": 918,
+     "per_day": null
+    }
+   ]
+  },
+  {
+   "tag": "医療",
+   "total": 114979,
+   "total_per_day": null,
+   "category": "",
+   "words": [
+    {
+     "word": "2型糖尿病",
+     "pos": 1,
+     "count": 6108,
+     "per_day": 10.0
+    },
+    {
+     "word": "ALS",
+     "pos": 2,
+     "count": 6020,
+     "per_day": 8.4
+    },
+    {
+     "word": "COPD",
+     "pos": 3,
+     "count": 2978,
+     "per_day": 3.6
+    },
+    {
+     "word": "CRP",
+     "pos": 4,
+     "count": 2650,
+     "per_day": 1.3
+    },
+    {
+     "word": "CT",
+     "pos": 5,
+     "count": 10685,
+     "per_day": 1.7
+    },
+    {
+     "word": "DMAT",
+     "pos": 6,
+     "count": 1099,
+     "per_day": 0.7
+    },
+    {
+     "word": "EBM",
+     "pos": 7,
+     "count": 1818,
+     "per_day": 1.1
+    },
+    {
+     "word": "ER",
+     "pos": 8,
+     "count": 1576,
+     "per_day": 0.1
+    },
+    {
+     "word": "FDA",
+     "pos": 9,
+     "count": 8472,
+     "per_day": 2.3
+    },
+    {
+     "word": "GLP-1",
+     "pos": 10,
+     "count": 4841,
+     "per_day": 1.4
+    }
+   ]
+  },
+  {
+   "tag": "子育て",
+   "total": 1350329,
+   "total_per_day": null,
+   "category": "",
+   "words": [
+    {
+     "word": "0歳児",
+     "pos": 1,
+     "count": 7823,
+     "per_day": 4.3
+    },
+    {
+     "word": "0歳育児",
+     "pos": 2,
+     "count": 1423,
+     "per_day": 3.1
+    },
+    {
+     "word": "1歳児",
+     "pos": 3,
+     "count": 9279,
+     "per_day": 7.6
+    },
+    {
+     "word": "2歳児",
+     "pos": 4,
+     "count": 14334,
+     "per_day": 12.7
+    },
+    {
+     "word": "3人育児",
+     "pos": 5,
+     "count": 4830,
+     "per_day": 3.9
+    },
+    {
+     "word": "3歳児",
+     "pos": 6,
+     "count": 11175,
+     "per_day": 10.0
+    },
+    {
+     "word": "3歳差育児",
+     "pos": 7,
+     "count": 250,
+     "per_day": -0.1
+    },
+    {
+     "word": "4児ママ",
+     "pos": 8,
+     "count": 976,
+     "per_day": 1.6
+    },
+    {
+     "word": "5児ママ",
+     "pos": 9,
+     "count": 310,
+     "per_day": 0.6
+    },
+    {
+     "word": "おねしょ",
+     "pos": 10,
+     "count": 2213,
+     "per_day": 1.1
+    }
+   ]
+  }
+ ],
+ "baseline": {
+  "run": "2026-11-04 18:50",
+  "items": [
+   {
+    "tag": "note副業",
+    "group": "社会・経済",
+    "read": true,
+    "total": 10509,
+    "likes_med": 107,
+    "age_med_h": 39,
+    "new_window_h": 168.1,
+    "category": "ビジネス＞収益化",
+    "suspect": false
+   },
+   {
+    "tag": "note初心者",
+    "group": "",
+    "read": true,
+    "total": 64372,
+    "likes_med": 25,
+    "age_med_h": 23.1,
+    "new_window_h": 48.1,
+    "category": "ビジネス＞収益化",
+    "suspect": false
+   },
+   {
+    "tag": "副業",
+    "group": "社会・経済",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "在宅ワーク",
+    "group": "社会・経済",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "生成AI",
+    "group": "テクノロジー",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "起業",
+    "group": "社会・経済",
+    "read": true,
+    "total": 298539,
+    "likes_med": 8,
+    "age_med_h": 22.7,
+    "new_window_h": 42.8,
+    "category": "キャリア＞起業・独立",
+    "suspect": false
+   },
+   {
+    "tag": "医療",
+    "group": "くらし",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "子育て",
+    "group": "くらし",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "暮らし",
+    "group": "くらし",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "恋愛",
+    "group": "くらし",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "占い",
+    "group": "くらし",
+    "read": true,
+    "total": 339742,
+    "likes_med": 16.5,
+    "age_med_h": 23.2,
+    "new_window_h": 52.4,
+    "category": "占い・心理＞心理",
+    "suspect": false
+   },
+   {
+    "tag": "ニュース",
+    "group": "社会・経済",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "投資",
+    "group": "社会・経済",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "プログラミング",
+    "group": "テクノロジー",
+    "read": true,
+    "total": 182104,
+    "likes_med": 6.5,
+    "age_med_h": 196.6,
+    "new_window_h": 676,
+    "category": "コンピュータ・IT＞プログラミング",
+    "suspect": true
+   },
+   {
+    "tag": "ガジェット",
+    "group": "テクノロジー",
+    "read": true,
+    "total": 118336,
+    "likes_med": 20.5,
+    "age_med_h": 77.4,
+    "new_window_h": 550.7,
+    "category": "レビュー＞ガジェットレビュー",
+    "suspect": false
+   },
+   {
+    "tag": "マンガ",
+    "group": "エンタメ",
+    "read": true,
+    "total": 386955,
+    "likes_med": 13,
+    "age_med_h": 27.6,
+    "new_window_h": 95,
+    "category": "マンガ＞その他マンガ",
+    "suspect": false
+   },
+   {
+    "tag": "映画",
+    "group": "エンタメ",
+    "read": true,
+    "total": 567312,
+    "likes_med": 7.5,
+    "age_med_h": 21.8,
+    "new_window_h": 27.3,
+    "category": "エンタメ",
+    "suspect": false
+   },
+   {
+    "tag": "ゲーム",
+    "group": "エンタメ",
+    "read": true,
+    "total": 503398,
+    "likes_med": 15.5,
+    "age_med_h": 78.7,
+    "new_window_h": 76.1,
+    "category": "ゲーム",
+    "suspect": false
+   },
+   {
+    "tag": "音楽",
+    "group": "エンタメ",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "競馬",
+    "group": "エンタメ",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "旅行",
+    "group": "趣味・関心",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "料理",
+    "group": "趣味・関心",
+    "read": true,
+    "total": 350653,
+    "likes_med": 21.5,
+    "age_med_h": 24.6,
+    "new_window_h": 48.1,
+    "category": "料理・グルメ＞料理・グルメ",
+    "suspect": false
+   },
+   {
+    "tag": "美容",
+    "group": "趣味・関心",
+    "read": true,
+    "total": 206788,
+    "likes_med": 19.5,
+    "age_med_h": 109.9,
+    "new_window_h": 190.5,
+    "category": "美容＞コスメ",
+    "suspect": false
+   },
+   {
+    "tag": "小説",
+    "group": "創作",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "写真",
+    "group": "創作",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "教育",
+    "group": "まなび",
+    "read": false,
+    "total": null,
+    "likes_med": null,
+    "age_med_h": null,
+    "new_window_h": null,
+    "category": "",
+    "suspect": false
+   },
+   {
+    "tag": "英語",
+    "group": "まなび",
+    "read": true,
+    "total": 266140,
+    "likes_med": 11,
+    "age_med_h": 44.2,
+    "new_window_h": 114.8,
+    "category": "語学＞英語学習",
+    "suspect": false
+   }
+  ],
+  "note": "人気・新着それぞれの上位（50本まで）。スキと古さは人気の上位20本の中央値、新着の幅は新着の一覧がさかのぼる時間。「読めず」はページは取れたが記事を読み取れなかったタグ。「疑い」は新着の一覧が人気の一覧と同じ記事で終わっていたタグ"
+ }
+}

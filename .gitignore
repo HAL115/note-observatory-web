@@ -1,0 +1,6 @@
+data/observatory.sqlite
+data/observatory.sqlite-journal
+site/
+__pycache__/
+*.pyc
+.DS_Store

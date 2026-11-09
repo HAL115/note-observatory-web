@@ -1,0 +1,17 @@
+{
+  "own_account": "aitohal",
+  "timezone": "Asia/Tokyo",
+  "sources": [
+    "data/raw"
+  ],
+  "run_gap_minutes": 45,
+  "popular_top_n": 20,
+  "new_depth_n": 40,
+  "members": {
+    "title": "noteタグ観測ダッシュボード（メンバー版）",
+    "show_own_articles": true
+  },
+  "private": {
+    "title": "noteタグ観測ダッシュボード（自分用）"
+  }
+}

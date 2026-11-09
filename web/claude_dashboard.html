@@ -1,0 +1,472 @@
+<style>
+.nt { font-family: var(--font-anthropic-sans); color: var(--color-fg); display: grid; gap: var(--cds-gap-lg); max-width: 72rem; margin-inline: auto; }
+.nt h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.nt h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.nt p { margin: 0; }
+.nt-lead { color: var(--color-fg); font-size: var(--cds-font-size-body); line-height: 1.7; }
+.nt-note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.6; }
+.nt-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--cds-gap-md); }
+.nt-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: grid; gap: var(--cds-gap-xs); }
+.nt-tile .nt-k { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.nt-tile .nt-v { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: normal; }
+.nt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--cds-gap-md); }
+.nt-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); min-width: 0; align-content: start; }
+.nt-chart { position: relative; min-width: 0; }
+.nt-chart svg { display: block; overflow: visible; }
+.nt-chart text { fill: var(--color-fg-muted); font-size: 12px; font-family: var(--font-anthropic-sans); }
+.nt-chart text.nt-ink { fill: var(--color-fg); }
+.nt-tip { position: absolute; pointer-events: none; z-index: 2; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); line-height: 1.6; white-space: nowrap; }
+.nt-tip .nt-tip-h { color: var(--cds-text-secondary); }
+.nt-tablebox { overflow: auto; max-height: 28rem; }
+.nt table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); }
+.nt th, .nt td { text-align: left; padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+.nt th { position: sticky; top: 0; background: var(--color-panel); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+.nt th button { all: unset; cursor: pointer; }
+.nt th button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+.nt td.nt-num, .nt th.nt-num { text-align: right; font-variant-numeric: tabular-nums; }
+.nt td.nt-wrap { white-space: normal; min-width: 14rem; }
+.nt-pill { display: inline-flex; align-items: center; gap: var(--cds-gap-xs); font-weight: var(--cds-font-weight-medium); }
+.nt-pill i { width: 0.5rem; height: 0.5rem; border-radius: 50%; display: inline-block; background: currentColor; }
+.nt-ok { color: var(--color-ok); }
+.nt-bad { color: var(--color-bad); }
+.nt-warn { color: var(--color-warn); }
+.nt-muted { color: var(--color-fg-muted); }
+.nt select { font: inherit; font-size: var(--cds-font-size-caption); color: var(--color-fg); background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-xs) var(--cds-pad-sm); }
+.nt-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--cds-gap-sm); }
+.nt-fail { display: flex; align-items: center; justify-content: center; gap: var(--cds-gap-xs); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); min-height: 8rem; }
+.nt-fail i { width: 0.375rem; height: 0.375rem; border-radius: 50%; background: var(--color-bad); display: inline-block; }
+.nt [data-dash-source-state=empty] { color: transparent; }
+.nt [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+</style>
+
+<div class="nt">
+  <header id="top" style="display:grid;gap:var(--cds-gap-sm)">
+    <h1>noteタグ観測</h1>
+    <p class="nt-lead" id="takeaway">
+      見たタグは <b data-source="totals" data-field="value" data-where="metric=tags">—</b> 個。新しい記事がいちばん入れかわる棚は #<b data-source="extremes" data-field="tag" data-where="which=fresh">—</b>（人気の上位20本が公開から <span data-source="extremes" data-field="pop_age_days" data-where="which=fresh">—</span> 日）、古い記事がいちばん居座る棚は #<b data-source="extremes" data-field="tag" data-where="which=stale">—</b>（<span data-source="extremes" data-field="pop_age_days" data-where="which=stale">—</span> 日）でした。
+    </p>
+    <p class="nt-note">ブラウザでログアウトしたまま、決まった時刻に note のタグのページを見た記録から出しています。数字はタグごとの集計だけで、ほかの書き手の名前や記事は載せていません。</p>
+  </header>
+
+  <section class="nt-tiles" id="tiles" aria-label="観測の範囲">
+    <div class="nt-tile"><span class="nt-k">観測の回数</span><span class="nt-v" data-source="totals" data-field="value" data-where="metric=runs">—</span></div>
+    <div class="nt-tile"><span class="nt-k">見たタグ</span><span class="nt-v" data-source="totals" data-field="value" data-where="metric=tags">—</span></div>
+    <div class="nt-tile"><span class="nt-k">定時観測の期間</span><span class="nt-v" style="font-size:var(--cds-font-size-heading)"><span data-source="coverage" data-field="from" data-where="kind=定時観測">—</span> 〜 <span data-source="coverage" data-field="to" data-where="kind=定時観測">—</span></span></div>
+    <div class="nt-tile"><span class="nt-k">自分の記事がタグのページに出た回数</span><span class="nt-v" data-source="totals" data-field="value" data-where="metric=own_hits">—</span></div>
+  </section>
+
+  <section class="nt-card" id="shelf">
+    <h2>タグの棚の性格</h2>
+    <p class="nt-note">人気の上位20本が、公開から何日たった記事か（中央値）。左ほど新しい記事が入れかわる棚、右ほど古い記事が居座る棚。横軸は対数です。</p>
+    <div class="nt-chart dash-skeleton" id="shelf-chart" data-source="shelf_by_tag" style="min-height:12rem"></div>
+  </section>
+
+  <div class="nt-grid">
+    <section class="nt-card" id="entry">
+      <h2>新着から人気に入った割合</h2>
+      <p class="nt-note">新着で見かけた記事のうち、どこかの回で人気にも出た割合。公開から12時間以上追えた記事だけ、観測が10回以上あるタグだけを数えています。</p>
+      <div class="nt-chart dash-skeleton" id="entry-chart" data-source="entries" style="min-height:6rem"></div>
+    </section>
+    <section class="nt-card" id="rhythm">
+      <h2>タグのページが更新される時刻</h2>
+      <p class="nt-note">1時間おきに見ていた期間に、前の回から新着の上位10本が入れかわった割合（時台ごと）。組の数が少ない時刻は0%か100%になりやすいです。</p>
+      <div class="nt-chart dash-skeleton" id="rhythm-chart" data-source="rhythm" style="min-height:12rem"></div>
+    </section>
+  </div>
+
+  <section class="nt-card" id="trend">
+    <div class="nt-row">
+      <h2>人気の古さの移り変わり</h2>
+      <select id="trend-tag" aria-label="タグ" data-source="trend"></select>
+    </div>
+    <p class="nt-note">定時観測の回ごとの、人気の上位20本の古さ（中央値、日）。</p>
+    <div class="nt-chart dash-skeleton" id="trend-chart" data-source="trend" style="min-height:14rem"></div>
+  </section>
+
+  <section class="nt-card" id="table">
+    <h2>タグごとの数字</h2>
+    <p class="nt-note">見出しを押すと並べ替えられます。1日の新着（目安）は、新着の40本目が何時間前の記事かから出した目安です。タグ探しの回はハッシュタグのページから新着に切り替えて数えたので、定時観測とは測り方が違います。資格者は、人気の上位20本のうち紹介文に医師・薬剤師・税理士などの資格がある本数です。</p>
+    <div class="nt-tablebox">
+      <table id="shelf-table" data-source="shelves" data-row-key="tag,source">
+        <thead><tr>
+          <th data-field="tag"><button type="button" data-k="tag">タグ</button></th>
+          <th data-field="field"><button type="button" data-k="field">分野</button></th>
+          <th data-field="source"><button type="button" data-k="source">出どころ</button></th>
+          <th data-field="page"><button type="button" data-k="page">ページ</button></th>
+          <th class="nt-num" data-field="total"><button type="button" data-k="total">件数</button></th>
+          <th class="nt-num" data-field="new_per_day"><button type="button" data-k="new_per_day">1日の新着（目安）</button></th>
+          <th class="nt-num" data-field="pop_age_days"><button type="button" data-k="pop_age_days">人気の古さ（日）</button></th>
+          <th class="nt-num" data-field="pop_likes"><button type="button" data-k="pop_likes">人気のスキ</button></th>
+          <th class="nt-num" data-field="qualified"><button type="button" data-k="qualified">資格者（/20）</button></th>
+          <th class="nt-num" data-field="runs"><button type="button" data-k="runs">回数</button></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="nt-card" id="own">
+    <h2>自分の記事</h2>
+    <p class="nt-note">観測したタグのページ（人気・新着）に、自分の記事が出たかどうか。</p>
+    <div class="nt-tablebox">
+      <table id="own-table" data-source="own" data-row-key="id">
+        <thead><tr>
+          <th data-field="id">記事</th>
+          <th data-field="label">名前</th>
+          <th data-field="published_at">公開</th>
+          <th data-field="paid">料金</th>
+          <th data-field="status">いまの状態</th>
+          <th class="nt-num" data-field="appearances">出た回数</th>
+          <th data-field="best">いちばん上の順位</th>
+          <th data-field="tags">ハッシュタグ</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="nt-card" id="hypotheses">
+    <h2>仮説と、確かめた結果</h2>
+    <p class="nt-note">よく見る主張と自分の仮説を、観測で判定したもの。</p>
+    <div class="nt-tablebox" style="max-height:none">
+      <table id="hyp-table" data-source="hypotheses" data-row-key="id">
+        <thead><tr>
+          <th data-field="status_label">結果</th>
+          <th data-field="claim">主張・仮説</th>
+          <th data-field="evidence">根拠</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+dash.calc('shelf_by_tag', {
+  inputs: ['shelves'],
+  title: 'タグごとに1行',
+  description: '同じタグがタグ探しと定時観測の両方にあるときはタグ探しの行を使い、人気の古さの順に並べる。',
+  fn: (shelves) => {
+    const byTag = new Map();
+    for (const r of shelves) {
+      if (r.pop_age_days == null) continue;
+      const had = byTag.get(r.tag);
+      if (!had || r.source === 'タグ探し') byTag.set(r.tag, r);
+    }
+    return [...byTag.values()].sort((a, b) => a.pop_age_days - b.pop_age_days);
+  },
+});
+
+dash.calc('extremes', {
+  inputs: ['shelf_by_tag'],
+  title: 'いちばん新しい棚と古い棚',
+  description: '人気の古さがいちばん短いタグと、いちばん長いタグ。',
+  fn: (shelf_by_tag) => {
+    if (!shelf_by_tag.length) return [];
+    const a = shelf_by_tag[0], b = shelf_by_tag[shelf_by_tag.length - 1];
+    return [
+      { which: 'fresh', tag: a.tag, pop_age_days: a.pop_age_days },
+      { which: 'stale', tag: b.tag, pop_age_days: b.pop_age_days },
+    ];
+  },
+});
+
+dash.calc('totals', {
+  inputs: ['coverage', 'own', 'shelf_by_tag'],
+  title: '観測の合計',
+  description: '観測の回数（定時観測とタグ探しの合計）、見たタグの数、自分の記事がタグのページに出た回数。',
+  fn: (coverage, own, shelf_by_tag) => [
+    { metric: 'runs', value: coverage.reduce((s, r) => s + Number(r.runs || 0), 0) },
+    { metric: 'tags', value: shelf_by_tag.length },
+    { metric: 'own_hits', value: own.reduce((s, r) => s + Number(r.appearances || 0), 0) },
+  ],
+});
+
+(() => {
+  const fmtInt = d3.format(',');
+  const fmtDays = (v) => v == null ? '—' : String(Math.round(Number(v) * 10) / 10);
+  const fmtPct = d3.format('.1%');
+  const parseTime = d3.timeParse('%Y-%m-%d %H:%M');
+  const fmtMd = d3.timeFormat('%-m/%-d %H:%M');
+  const fmtStamp = (s) => { const t = s ? parseTime(s) : null; return t ? fmtMd(t) : (s || '—'); };
+
+  function fail(box, status) {
+    box.replaceChildren();
+    if (status === 'error' || status === 'connect' || status === 'declined') {
+      const d = document.createElement('div');
+      d.className = 'nt-fail';
+      const i = document.createElement('i');
+      d.append(i, '読み込めませんでした');
+      box.append(d);
+    }
+  }
+
+  function tipFor(box) {
+    let tip = box.querySelector('.nt-tip');
+    if (!tip) { tip = document.createElement('div'); tip.className = 'nt-tip'; tip.hidden = true; box.append(tip); }
+    return {
+      show(event, head, lines) {
+        tip.replaceChildren();
+        const h = document.createElement('div'); h.className = 'nt-tip-h'; h.textContent = head; tip.append(h);
+        for (const l of lines) { const d = document.createElement('div'); d.textContent = l; tip.append(d); }
+        tip.hidden = false;
+        const r = box.getBoundingClientRect();
+        let x = event.clientX - r.left + 12, y = event.clientY - r.top + 12;
+        const w = tip.offsetWidth, hgt = tip.offsetHeight;
+        if (x + w > r.width) x = Math.max(0, event.clientX - r.left - w - 12);
+        if (y + hgt > r.height) y = Math.max(0, r.height - hgt);
+        tip.style.left = x + 'px'; tip.style.top = y + 'px';
+      },
+      hide() { tip.hidden = true; },
+    };
+  }
+
+  function fill(sel, text) { for (const el of document.querySelectorAll(sel)) el.textContent = text; }
+
+  // 見出しとタイル
+  function drawHeader() {
+    const ex = dash.data('extremes'), tot = dash.data('totals'), cov = dash.data('coverage');
+    const exRows = ex.status === 'ok' ? ex.data : [];
+    const get = (which, f) => { const r = exRows.find((x) => x.which === which); return r ? r[f] : null; };
+    fill('[data-source="extremes"][data-field="tag"][data-where="which=fresh"]', get('fresh', 'tag') ?? '—');
+    fill('[data-source="extremes"][data-field="tag"][data-where="which=stale"]', get('stale', 'tag') ?? '—');
+    fill('[data-source="extremes"][data-field="pop_age_days"][data-where="which=fresh"]', fmtDays(get('fresh', 'pop_age_days')));
+    fill('[data-source="extremes"][data-field="pop_age_days"][data-where="which=stale"]', fmtDays(get('stale', 'pop_age_days')));
+    const totRows = tot.status === 'ok' ? tot.data : [];
+    for (const m of ['runs', 'tags', 'own_hits']) {
+      const r = totRows.find((x) => x.metric === m);
+      fill(`[data-source="totals"][data-field="value"][data-where="metric=${m}"]`, r ? fmtInt(r.value) : '—');
+    }
+    const covRows = cov.status === 'ok' ? cov.data : [];
+    const s = covRows.find((x) => x.kind === '定時観測');
+    fill('[data-source="coverage"][data-field="from"][data-where="kind=定時観測"]', s ? s.from : '—');
+    fill('[data-source="coverage"][data-field="to"][data-where="kind=定時観測"]', s ? s.to : '—');
+  }
+
+  // 棚の性格（ドット、対数軸）
+  function drawShelf() {
+    const box = document.getElementById('shelf-chart');
+    const d = dash.data('shelf_by_tag');
+    if (d.status !== 'ok') { fail(box, d.status); return; }
+    box.classList.remove('dash-skeleton');
+    box.replaceChildren();
+    const rows = d.data;
+    if (!rows.length) return;
+    const W = Math.max(300, box.clientWidth), rowH = 24, top = 26, H = top + rows.length * rowH + 28;
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'タグごとの人気の古さ');
+    const labels = svg.append('g');
+    const lt = labels.selectAll('text').data(rows).join('text').attr('class', 'nt-ink').attr('text-anchor', 'end').attr('dy', '0.32em').text((r) => '#' + r.tag);
+    let L = 0; lt.each(function () { L = Math.max(L, this.getComputedTextLength()); });
+    L = Math.ceil(L) + 16;
+    const valText = svg.append('text').text('341.0日'); const R = Math.ceil(valText.node().getComputedTextLength()) + 16; valText.remove();
+    const x = d3.scaleLog([0.1, 1000], [L, W - R]).clamp(true);
+    const y = (i) => top + i * rowH + rowH / 2;
+    lt.attr('x', L - 10).attr('y', (r, i) => y(i));
+    const ticks = [0.1, 1, 10, 100, 1000];
+    svg.append('g').selectAll('line').data(ticks).join('line').attr('x1', x).attr('x2', x).attr('y1', top - 6).attr('y2', H - 24).attr('stroke', 'var(--cds-chart-grid)').attr('stroke-width', 1);
+    svg.append('g').selectAll('text').data(ticks).join('text').attr('x', x).attr('y', H - 6).attr('text-anchor', 'middle').text((v) => `${v}日`);
+    svg.append('text').attr('x', L).attr('y', 12).text('← 新しい記事が並ぶ');
+    svg.append('text').attr('x', W - R).attr('y', 12).attr('text-anchor', 'end').text('古い記事が居座る →');
+    svg.append('g').selectAll('line').data(rows).join('line').attr('x1', L).attr('x2', (r) => x(r.pop_age_days)).attr('y1', (r, i) => y(i)).attr('y2', (r, i) => y(i)).attr('stroke', 'var(--cds-chart-grid)').attr('stroke-width', 1);
+    svg.append('g').selectAll('circle').data(rows).join('circle').attr('cx', (r) => x(r.pop_age_days)).attr('cy', (r, i) => y(i)).attr('r', 5).attr('fill', dash.colors[0]).attr('stroke', 'var(--color-panel)').attr('stroke-width', 2);
+    svg.append('g').selectAll('text').data(rows).join('text').attr('x', W - R + 8).attr('y', (r, i) => y(i)).attr('dy', '0.32em').style('font-variant-numeric', 'tabular-nums').text((r) => fmtDays(r.pop_age_days) + '日');
+    const tip = tipFor(box);
+    svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', 0).attr('y', (r, i) => top + i * rowH).attr('width', W).attr('height', rowH).attr('fill', 'transparent')
+      .on('mousemove', (event, r) => tip.show(event, '#' + r.tag, [
+        `人気の古さ（中央値）：${fmtDays(r.pop_age_days)}日`,
+        `人気のスキ（中央値）：${r.pop_likes == null ? '—' : r.pop_likes}`,
+        `1日の新着（目安）：${r.new_per_day == null ? '—' : fmtInt(r.new_per_day) + '本'}`,
+        `${r.field}／${r.source} ${r.runs}回`,
+      ]))
+      .on('mouseleave', () => tip.hide());
+  }
+
+  // 新着から人気に入った割合（横棒）
+  function drawEntry() {
+    const box = document.getElementById('entry-chart');
+    const d = dash.data('entries');
+    if (d.status !== 'ok') { fail(box, d.status); return; }
+    box.classList.remove('dash-skeleton');
+    box.replaceChildren();
+    const rows = d.data.filter((r) => r.rate != null).slice().sort((a, b) => b.rate - a.rate);
+    if (!rows.length) return;
+    const W = Math.max(280, box.clientWidth), rowH = 36, H = rows.length * rowH + 26;
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', '新着から人気に入った割合');
+    const lt = svg.append('g').selectAll('text').data(rows).join('text').attr('class', 'nt-ink').attr('text-anchor', 'end').attr('dy', '0.32em').text((r) => '#' + r.tag);
+    let L = 0; lt.each(function () { L = Math.max(L, this.getComputedTextLength()); }); L = Math.ceil(L) + 14;
+    const probe = svg.append('text').text('100.0%（999/999）'); const R = Math.ceil(probe.node().getComputedTextLength()) + 12; probe.remove();
+    const x = d3.scaleLinear([0, 1], [L, W - R]);
+    const y = (i) => i * rowH + rowH / 2;
+    lt.attr('x', L - 10).attr('y', (r, i) => y(i));
+    svg.append('g').selectAll('line').data([0, 0.25, 0.5, 0.75, 1]).join('line').attr('x1', x).attr('x2', x).attr('y1', 0).attr('y2', H - 22).attr('stroke', (v) => v ? 'var(--cds-chart-grid)' : 'var(--cds-chart-axis)');
+    svg.append('g').selectAll('text').data([0, 0.25, 0.5, 0.75, 1]).join('text').attr('x', x).attr('y', H - 6).attr('text-anchor', 'middle').text(d3.format('.0%'));
+    svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', L).attr('y', (r, i) => y(i) - 10).attr('height', 20).attr('rx', 4).attr('width', (r) => Math.max(2, x(r.rate) - L)).attr('fill', dash.colors[0]);
+    svg.append('g').selectAll('text').data(rows).join('text').attr('class', 'nt-ink').attr('x', (r) => x(r.rate) + 8).attr('y', (r, i) => y(i)).attr('dy', '0.32em').style('font-variant-numeric', 'tabular-nums').text((r) => `${fmtPct(r.rate)}（${r.entered}/${r.n}）`);
+    const tip = tipFor(box);
+    svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', 0).attr('y', (r, i) => i * rowH).attr('width', W).attr('height', rowH).attr('fill', 'transparent')
+      .on('mousemove', (event, r) => tip.show(event, '#' + r.tag, [
+        `人気に入った：${r.entered}本／${r.n}本（${fmtPct(r.rate)}）`,
+        `新着に出た回のうちに人気にも出た：${r.same_update}本`,
+        `公開から人気に出るまで（中央値）：${r.lag_h == null ? '—' : r.lag_h + '時間'}`,
+        `対象：${fmtStamp(r.pub_from)}〜${fmtStamp(r.pub_to)}に公開（観測${r.runs}回）`,
+      ]))
+      .on('mouseleave', () => tip.hide());
+  }
+
+  // 更新の時刻（縦棒）
+  function drawRhythm() {
+    const box = document.getElementById('rhythm-chart');
+    const d = dash.data('rhythm');
+    if (d.status !== 'ok') { fail(box, d.status); return; }
+    box.classList.remove('dash-skeleton');
+    box.replaceChildren();
+    const rows = d.data;
+    const W = Math.max(280, box.clientWidth), H = 200, L = 40, R = 6, top = 10, base = H - 26;
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', '時台ごとの、新着が入れかわった割合');
+    const x = d3.scaleBand(d3.range(24), [L, W - R]).padding(0.25);
+    const y = d3.scaleLinear([0, 1], [base, top]);
+    svg.append('g').selectAll('line').data([0, 0.5, 1]).join('line').attr('x1', L).attr('x2', W - R).attr('y1', y).attr('y2', y).attr('stroke', (v) => v ? 'var(--cds-chart-grid)' : 'var(--cds-chart-axis)');
+    svg.append('g').selectAll('text').data([0, 0.5, 1]).join('text').attr('x', L - 6).attr('y', y).attr('dy', '0.32em').attr('text-anchor', 'end').text(d3.format('.0%'));
+    svg.append('g').selectAll('text').data(d3.range(0, 24, 3)).join('text').attr('x', (h) => x(h) + x.bandwidth() / 2).attr('y', H - 8).attr('text-anchor', 'middle').text((h) => `${h}時`);
+    const bw = Math.min(24, x.bandwidth());
+    const withPairs = rows.filter((r) => r.pairs > 0 && r.share != null);
+    svg.append('g').selectAll('rect').data(withPairs).join('rect')
+      .attr('x', (r) => x(r.hour) + (x.bandwidth() - bw) / 2).attr('width', bw)
+      .attr('y', (r) => r.share > 0 ? y(r.share) : base - 2).attr('height', (r) => r.share > 0 ? base - y(r.share) : 2).attr('rx', 3)
+      .attr('fill', (r) => r.share > 0 ? dash.colors[0] : 'var(--cds-chart-muted)');
+    const tip = tipFor(box);
+    svg.append('g').selectAll('rect').data(rows).join('rect').attr('x', (r) => x(r.hour)).attr('width', x.bandwidth()).attr('y', top).attr('height', base - top).attr('fill', 'transparent')
+      .on('mousemove', (event, r) => tip.show(event, `${r.hour}時台`, r.pairs ? [`入れかわった：${r.changed}組／${r.pairs}組（${fmtPct(r.share)}）`] : ['この時刻の組はありません']))
+      .on('mouseleave', () => tip.hide());
+  }
+
+  // 人気の古さの移り変わり（折れ線）
+  const trendSel = document.getElementById('trend-tag');
+  trendSel.addEventListener('change', () => dash.setParams({ trend_tag: trendSel.value }));
+  function drawTrend() {
+    const box = document.getElementById('trend-chart');
+    const d = dash.data('trend');
+    if (d.status !== 'ok') { fail(box, d.status); trendSel.replaceChildren(); return; }
+    box.classList.remove('dash-skeleton');
+    box.replaceChildren();
+    const tags = [...new Set(d.data.map((r) => r.tag))];
+    let tag = dash.params().trend_tag;
+    if (!tags.includes(tag)) tag = tags[0];
+    trendSel.replaceChildren(...tags.map((t) => new Option('#' + t, t)));
+    trendSel.value = tag ?? '';
+    const pts = d.data.filter((r) => r.tag === tag && r.pop_age_days != null).map((r) => ({ ...r, t: parseTime(r.run_at) })).filter((r) => r.t).sort((a, b) => a.t - b.t);
+    if (!pts.length) return;
+    const W = Math.max(280, box.clientWidth), H = 220, L = 44, R = 16, top = 12, base = H - 28;
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', `#${tag} の人気の古さの移り変わり`);
+    const ext = d3.extent(pts, (p) => p.t);
+    if (+ext[0] === +ext[1]) ext[1] = new Date(+ext[0] + 3600e3);
+    const x = d3.scaleTime(ext, [L, W - R]);
+    const yMax = d3.max(pts, (p) => p.pop_age_days) || 1;
+    const y = d3.scaleLinear([0, yMax * 1.1], [base, top]).nice();
+    const yt = y.ticks(4);
+    svg.append('g').selectAll('line').data(yt).join('line').attr('x1', L).attr('x2', W - R).attr('y1', y).attr('y2', y).attr('stroke', (v) => v ? 'var(--cds-chart-grid)' : 'var(--cds-chart-axis)');
+    svg.append('g').selectAll('text').data(yt).join('text').attr('x', L - 6).attr('y', y).attr('dy', '0.32em').attr('text-anchor', 'end').text((v) => `${v}日`);
+    const xt = x.ticks(Math.max(2, Math.floor((W - L - R) / 110)));
+    svg.append('g').selectAll('text').data(xt).join('text').attr('x', x).attr('y', H - 8).attr('text-anchor', 'middle').text(d3.timeFormat('%-m/%-d'));
+    svg.append('path').datum(pts).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round')
+      .attr('d', d3.line().x((p) => x(p.t)).y((p) => y(p.pop_age_days)));
+    svg.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (p) => x(p.t)).attr('cy', (p) => y(p.pop_age_days)).attr('r', pts.length > 20 ? 2.5 : 4).attr('fill', dash.colors[0]);
+    const dot = svg.append('circle').attr('r', 5).attr('fill', dash.colors[0]).attr('stroke', 'var(--color-panel)').attr('stroke-width', 2).style('display', 'none');
+    const tip = tipFor(box);
+    const bis = d3.bisector((p) => p.t).center;
+    svg.append('rect').attr('x', L).attr('y', top).attr('width', W - L - R).attr('height', base - top).attr('fill', 'transparent')
+      .on('mousemove', (event) => {
+        const [mx] = d3.pointer(event);
+        const p = pts[bis(pts, x.invert(mx))];
+        dot.style('display', null).attr('cx', x(p.t)).attr('cy', y(p.pop_age_days));
+        tip.show(event, fmtStamp(p.run_at), [`#${p.tag} 人気の古さ：${fmtDays(p.pop_age_days)}日`, `人気のスキ（中央値）：${p.pop_likes == null ? '—' : p.pop_likes}`]);
+      })
+      .on('mouseleave', () => { dot.style('display', 'none'); tip.hide(); });
+  }
+
+  // 表（並べ替えつき）
+  const shelfTable = document.getElementById('shelf-table');
+  let sortK = 'pop_age_days', dir = 1;
+  shelfTable.querySelector('thead').addEventListener('click', (event) => {
+    const b = event.target.closest('button[data-k]'); if (!b) return;
+    const k = b.dataset.k; dir = k === sortK ? -dir : 1; sortK = k; drawTable();
+  });
+  const NUM = new Set(['total', 'new_per_day', 'pop_age_days', 'pop_likes', 'qualified', 'runs']);
+  function drawTable() {
+    const d = dash.data('shelves');
+    const tbody = shelfTable.querySelector('tbody');
+    if (d.status !== 'ok') { tbody.replaceChildren(); return; }
+    const rows = d.data.slice().sort((a, b) => {
+      const va = a[sortK], vb = b[sortK];
+      if (va == null && vb == null) return 0; if (va == null) return 1; if (vb == null) return -1;
+      return (NUM.has(sortK) ? Number(va) - Number(vb) : String(va).localeCompare(String(vb), 'ja')) * dir;
+    });
+    for (const th of shelfTable.querySelectorAll('th')) {
+      const k = th.querySelector('button')?.dataset.k;
+      if (k === sortK) th.setAttribute('aria-sort', dir > 0 ? 'ascending' : 'descending'); else th.removeAttribute('aria-sort');
+    }
+    const cols = ['tag', 'field', 'source', 'page', 'total', 'new_per_day', 'pop_age_days', 'pop_likes', 'qualified', 'runs'];
+    tbody.replaceChildren(...rows.map((r) => {
+      const tr = document.createElement('tr');
+      tr.dataset.key = encodeURIComponent(r.tag) + ',' + encodeURIComponent(r.source);
+      for (const c of cols) {
+        const td = document.createElement('td');
+        const v = r[c];
+        if (NUM.has(c)) { td.className = 'nt-num'; td.textContent = v == null ? '—' : (c === 'pop_age_days' ? fmtDays(v) : fmtInt(v)); }
+        else td.textContent = v ?? '—';
+        tr.append(td);
+      }
+      return tr;
+    }));
+  }
+
+  function drawOwn() {
+    const d = dash.data('own');
+    const tbody = document.querySelector('#own-table tbody');
+    if (d.status !== 'ok') { tbody.replaceChildren(); return; }
+    const cols = ['id', 'label', 'published_at', 'paid', 'status', 'appearances', 'best', 'tags'];
+    tbody.replaceChildren(...d.data.map((r) => {
+      const tr = document.createElement('tr');
+      for (const c of cols) {
+        const td = document.createElement('td');
+        if (c === 'appearances') { td.className = 'nt-num'; td.textContent = fmtInt(r[c] ?? 0); }
+                else td.textContent = r[c] ?? '—';
+        if (c === 'tags') td.className = 'nt-wrap';
+        tr.append(td);
+      }
+      return tr;
+    }));
+  }
+
+  const PILL = { supported: 'nt-ok', partial: 'nt-warn', weak: 'nt-warn', refuted: 'nt-bad', testing: 'nt-warn', untested: 'nt-muted' };
+  function drawHyp() {
+    const d = dash.data('hypotheses');
+    const tbody = document.querySelector('#hyp-table tbody');
+    if (d.status !== 'ok') { tbody.replaceChildren(); return; }
+    const rows = d.data.slice().sort((a, b) => a.order - b.order);
+    tbody.replaceChildren(...rows.map((r) => {
+      const tr = document.createElement('tr');
+      tr.dataset.key = r.id;
+      const a = document.createElement('td');
+      const pill = document.createElement('span'); pill.className = 'nt-pill ' + (PILL[r.status] || 'nt-muted');
+      pill.append(document.createElement('i'), r.status_label);
+      a.append(pill);
+      const b = document.createElement('td'); b.className = 'nt-wrap'; b.textContent = r.claim;
+      const c = document.createElement('td'); c.className = 'nt-wrap nt-muted'; c.textContent = r.evidence;
+      tr.append(a, b, c);
+      return tr;
+    }));
+  }
+
+  dash.onData(() => {
+    drawHeader();
+    drawShelf();
+    drawEntry();
+    drawRhythm();
+    drawTrend();
+    drawTable();
+    drawOwn();
+    drawHyp();
+  });
+})();
+</script>

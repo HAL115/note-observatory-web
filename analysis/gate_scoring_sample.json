@@ -1,0 +1,665 @@
+{
+ "rubric": {
+  "score_0_5": [
+   "書き手自身の体験・観察・作業が書いてある",
+   "日付・期間・環境などの条件が書いてある",
+   "自分で得た数字（回数・時間・人数・金額など）がある",
+   "選んだ理由か、選ばなかったものが書いてある",
+   "失敗やうまくいかなかったことが書いてある"
+  ],
+  "type": [
+   "体験・観察",
+   "ハウツー・一般論",
+   "告知・宣伝",
+   "ニュース・まとめ",
+   "その他"
+  ],
+  "also": [
+   "そのタグをハッシュタグに付けているか",
+   "本文の話題がそのタグに合うか"
+  ],
+  "rules": "ログアウト、1日20本まで（定時観測と合わせて1日50〜60ページ以内）。書き手と記事名は記録の外に出さない。本文の文章は保存しない（判定だけ）"
+ },
+ "sample": [
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/biz_growth/n/ne7c04e70c61c",
+   "title": "Claude Haiku 5.5登場。AIは「賢さ」より「使い分け」の時代へ",
+   "published": "2026-10-22 12:30",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/unikoukokun/n/n221dccd5495c",
+   "title": "MicrosoftのMAI-DxOは賢いAIより役割分担の合議と費用管理が強みかもしれない",
+   "published": "2026-10-24 01:52",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/lucky_agapan1659/n/n15610b903bd8",
+   "title": "AIを入れれば、会社は変わるのか",
+   "published": "2026-10-24 09:44",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/salesdock/n/nfd89220f94ff",
+   "title": "ぼんやりした悩みのまま、体育会学生の書類づくりをAIアプリにした話",
+   "published": "2026-10-21 19:42",
+   "batch": 1
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/irwinandco/n/naa9807987586",
+   "title": "AIのPoC（概念実証）でおすすめの開発会社7選と選び方【2026年版】",
+   "published": "2026-10-22 16:39",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/shikina_lab/n/na2d27410963f",
+   "title": "神プロンプト？ それ、普通にやってますけど。",
+   "published": "2026-10-22 00:28",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/kitahachi_0918/n/n16c5f5dd936b",
+   "title": "最も有意義なオーキャンを過ごすために~AI活用で質問づくり~",
+   "published": "2026-10-21 22:30",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/keuminaoki/n/nf44fe940491a",
+   "title": "少人数でも成果を落とさない。生成AIを「もう一人の下書き担当」にする方法",
+   "published": "2026-10-24 06:41",
+   "batch": 1
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/legal_quoll8713/n/ne24fa3ab50cc",
+   "title": "「上司の自己満足では？」と言われた挑戦――評価後に確かめたい、負担と功績のずれ",
+   "published": "2026-10-21 20:23",
+   "batch": 1
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/clever_hare316/n/n06ec81e05d16",
+   "title": "9万円の1件を、3万円ずつ3件で消し込みたい",
+   "published": "2026-10-22 07:03",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/aiyoroz/n/nbf3cc1ee0881",
+   "title": "忘年会の案内メールをAIで作る方法｜「参加は自由」と伝えたいなら、AIにもそう伝える【例文つき】",
+   "published": "2026-10-21 15:29",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/2ch3ch/n/n92684513bc91",
+   "title": "note人気急上昇ランキング TOP200の傾向と対策◆フォロワー数に隠された3つの罠と数字の読み方！副業やAI活用で失",
+   "published": "2026-10-21 17:43",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/swiftwand/n/nc0b5e1b692db",
+   "title": "その家電の保証書は、どこにありますか。家電ごとに紙を分けて、控えを取る5選",
+   "published": "2026-10-21 12:30",
+   "batch": 1
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/easefound/n/n190dfc12fafa",
+   "title": "人事評価は難しい。まず部下に伝えておきたいこと",
+   "published": "2026-10-22 09:07",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/quiet_emu2080/n/n8761b7b80a38",
+   "title": "退職勧奨を受けた。次の面談までに何を準備すればいい？──相談前に作る5つの整理シートとAI活用法【実践キット付き】",
+   "published": "2026-10-22 06:38",
+   "batch": 1
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/regal_llama6937/n/nd2356bbcb8b8",
+   "title": "内製システムは、作るより「使い続けてもらう」方が難しい",
+   "published": "2026-10-21 15:01",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/claudegptai/n/n775c44fabf66",
+   "title": "毎朝8:40、人手ゼロで動画が上がる。台本をAIが書く「動画工場」を作った話",
+   "published": "2026-10-22 08:33",
+   "batch": 1
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/verbin/n/n61da28e221d9",
+   "title": "現場のモヤモヤ②｜量産じゃない。それでも自動化したい。",
+   "published": "2026-10-21 18:54",
+   "batch": 1
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/akisho1010/n/n05d52b067298",
+   "title": "「やってみたけど、できなかった」でも、そこで終わらない53歳🤣",
+   "published": "2026-10-22 13:23",
+   "batch": 1
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/kensuke89/n/nfe2e863160eb",
+   "title": "AIで何でも作れる時代だからといって、何でもイチから作るのがよいとは限らない話｜Note 41",
+   "published": "2026-10-22 10:01",
+   "batch": 1
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/freelife_creator/n/nb885ce36e363",
+   "title": "【連載企画】「今月のAI副業収支報告」月次定期連載の設計法｜ファンがつく定点観測コンテンツの作り方",
+   "published": "2026-10-22 16:30",
+   "batch": 2
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/datainsight_pr/n/n87fd7a875bc4",
+   "title": "AIによるメディア構築｜「技術中心」から「コンセプト中心」へ",
+   "published": "2026-10-21 14:41",
+   "batch": 2
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/hot_ram6134/n/n9f6de803f632",
+   "title": "自動化した人ほど、確認しなくなる。",
+   "published": "2026-10-22 08:15",
+   "batch": 2
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/taka_sas_1979/n/n32bd8dc9a91a",
+   "title": "Excelのイルカ、そろそろ復活させてもいいんじゃないか？──高機能なのに使われないソフトと、人を育てる「提案型UI」の",
+   "published": "2026-10-22 06:04",
+   "batch": 2
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/brainy_coyote624/n/nb43d8cbe5faa",
+   "title": "ビジネスフレームワーク紹介：『ロジックツリー』",
+   "published": "2026-10-21 22:57",
+   "batch": 2
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/semi_shigure_60/n/nf9f3767c45be",
+   "title": "Anthropicで若手技術者の採用割合が急減――AI時代、IT業界は「人材の空洞化」を防げるのか？",
+   "published": "2026-10-21 19:38",
+   "batch": 2
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/tukaeru_ai/n/nea8d06b9c4a3",
+   "title": "AIの出力はどこまで確認するか｜確認の手間を減らす8つの方法",
+   "published": "2026-10-22 12:36",
+   "batch": 2
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/57shiftage/n/nc69a74c566de",
+   "title": "57歳、家族の中古iPhone3台を売りに行く。目標9万円。",
+   "published": "2026-10-22 12:44",
+   "batch": 2
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/open_loris8964/n/nd903564c62fd",
+   "title": "休みの日まで「何かしなきゃ」と思ってしまう医療職へ",
+   "published": "2026-10-24 06:31",
+   "batch": 2
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/saitangoukakulab/n/n17f5eab48d0b",
+   "title": "日病薬病院薬学認定薬剤師に最短合格する勉強法｜出題基準5区分の論点整理＋四択100問・全肢解説",
+   "published": "2026-10-22 07:26",
+   "batch": 2
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/mao_rakumama/n/ne7a4e06bd50b",
+   "title": "仕事が回らない管理職が、最初に見直すべき5つのこと",
+   "published": "2026-10-21 17:44",
+   "batch": 2
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/hitoyoshi_maga/n/n6d11c9d06de5",
+   "title": "【人吉デイリー】10月22日｜晴れて27℃、動くならきょう（あす午後から雨）／人吉温泉「あゆの里」がタイポグラフィ年鑑の",
+   "published": "2026-10-22 07:33",
+   "batch": 2
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/chihiro_aixwork/n/n90cc77aab1c7",
+   "title": "自動化の前に確認した「そのコピペ、本当に必要?」",
+   "published": "2026-10-21 13:45",
+   "batch": 2
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/clean_dahlia7514/n/n7c4468763fed",
+   "title": "表やグラフで見てみたシリーズ｜noteの分析結果⑤-2 ～noteで収益を出す方法を全部俯瞰してみた【第2話】～",
+   "published": "2026-10-22 11:32",
+   "batch": 2
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/sandbox_dgn/n/n417c7c3024f9",
+   "title": "【実践編】バラバラなファイルをAIで整理する。フォルダ階層・ルール・スキルの作り方",
+   "published": "2026-10-21 14:39",
+   "batch": 2
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/aniyokoiyo/n/n70471760af6b",
+   "title": "AIを使えるようになった。その先、どうやってクライアントさんに貢献する？",
+   "published": "2026-10-21 18:32",
+   "batch": 2
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/sasaruaibisiness/n/n26fea521cae2",
+   "title": "経営者よ。AI導入の前に、まず社員を1人育てなさい。",
+   "published": "2026-10-21 13:00",
+   "batch": 2
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/turuto/n/nb605a07f9c1f",
+   "title": "AIで生命科学を進めるには「審査」が必要？AnthropicのLSVPから考える、専門AIの使い方",
+   "published": "2026-10-22 02:00",
+   "batch": 2
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/akisho1010/n/n8751b50db2bd",
+   "title": "飽きっぽい53歳。でも、諦めるのは嫌なんです🤣。",
+   "published": "2026-10-21 19:25",
+   "batch": 2
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/ossam/n/n2e12a5c3f207",
+   "title": "AIは「男性脳」のほうが使いやすいのか",
+   "published": "2026-10-22 11:39",
+   "batch": 2
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/ai_sns_katsuyo/n/nf9fcea3efebe",
+   "title": "職務経歴書と面接対策をAIで仕上げる｜経験の棚卸しから想定問答まで、転職・就職活動のためのAI活用ガイド(15のプロンプ",
+   "published": "2026-10-21 14:37",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/nifty_magpie8347/n/n8b94ea7852a1",
+   "title": "生成AI研修を一度やっただけでは、会社にAIは定着しない",
+   "published": "2026-10-24 12:06",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/brainlab/n/naa03a41e3b4e",
+   "title": "【お知らせ】人材業界あるあるから業務改善のコツまで！エージェントの事業成長を支援するリアルなノウハウをお届け",
+   "published": "2026-10-21 18:29",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/mztn_404/n/nf6faee20d295",
+   "title": "中小企業のDX担当って、みんなどこで情報交換してる？",
+   "published": "2026-10-22 10:31",
+   "batch": 3
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/creatorrelay2026/n/n2d631cd2f02f",
+   "title": "昨日の記事が、明日も働く。",
+   "published": "2026-10-21 18:39",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/kaizenpro/n/n68adbcd72128",
+   "title": "苦しみの向こうに未来が待っていた",
+   "published": "2026-10-22 13:38",
+   "batch": 3
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/nool_kurosaki/n/nf673cca93287",
+   "title": "ChatGPTを開いたまま閉じている経営者へ。AI活用の最初の一手は、ツールより先にある",
+   "published": "2026-10-22 08:36",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/sandbox_dgn/n/n417c7c3024f9",
+   "title": "【実践編】バラバラなファイルをAIで整理する。フォルダ階層・ルール・スキルの作り方",
+   "published": "2026-10-21 14:39",
+   "batch": 3
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/ifjuku/n/n7211d612aaa4",
+   "title": "AI発信は本1冊から。Instagram・note・X・LINEの原液を作る方法",
+   "published": "2026-10-22 11:34",
+   "batch": 3
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/tovarity/n/nadc781904f7d",
+   "title": "個人事業主が「Notion の使用感」と「Gemini との連携」を両立すべく、タスク管理アプリを自作した話",
+   "published": "2026-10-21 21:31",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/hotsandwich1224/n/n7008cc91c596",
+   "title": "【AI活用術】「どのAIが一番か？」論争はもう終わりにしよう。3人の「AI先輩」を使いこなす大人の対話力",
+   "published": "2026-10-22 21:28",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/d_hirata/n/n54a9caec7960",
+   "title": "【探究ログ#0.1】「ワクワク」と「実現性」の狭間で。テーマ候補を客観評価してみる。",
+   "published": "2026-10-21 19:43",
+   "batch": 3
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/0430training/n/nee8de499bb87",
+   "title": "ChatGPTに育児相談して、何か決まりましたか？ 僕は相談をやめて、作りはじめました",
+   "published": "2026-10-23 21:33",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/mute_rue460/n/n531d4bada0fe",
+   "title": "お金は流れているのに、なぜサービスが届かないのか？「おもてなし」から考える、仕事を委託する仕組みの不思議",
+   "published": "2026-10-21 18:22",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/raku_raku_tantan/n/n9fb2af5e54dd",
+   "title": "Excel分析が数分で完了！Gemini/Claudeでデータ活用を加速するプロンプト集",
+   "published": "2026-10-21 11:00",
+   "batch": 3
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/aiedgerunner/n/n8343ea554d01",
+   "title": "【セキュリティ修正】Node.jsを更新したのに古いまま——バージョン確認と更新の3ステップ",
+   "published": "2026-10-22 16:34",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/meicoresystem/n/nb66bef361982",
+   "title": "【AI仕事術㉒】中小企業でも始められるAI活用の第一歩",
+   "published": "2026-10-22 08:30",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/soine_soudane/n/n20c93d9695a0",
+   "title": "【緊急】「PHPって何？」という人ほど確認してほしい。今夜23時、重大な脆弱性への緊急アップデートが公開されます",
+   "published": "2026-10-21 22:37",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/gyoumu_kaizen/n/n3d0d0f81dce1",
+   "title": "PHPの「脆弱性」は「欠陥」なのか―　弱点を突かれるのは瑕疵ではなく被害",
+   "published": "2026-10-22 10:14",
+   "batch": 3
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/grand_boar7587/n/n63cda660d35c",
+   "title": "店長のためのChatGPT仕事術【第10話】チェックリストで確認漏れを防ぐ方法",
+   "published": "2026-10-21 17:00",
+   "batch": 3
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/irwinandco/n/naa9807987586",
+   "title": "AIのPoC（概念実証）でおすすめの開発会社7選と選び方【2026年版】",
+   "published": "2026-10-22 16:39",
+   "batch": 4
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/aiworks_suzu/n/n326153f3e640",
+   "title": "「使えるAI」と「稼げるAI」は、まったく違う。",
+   "published": "2026-10-22 14:21",
+   "batch": 4
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/kai_ai_note1212/n/ne99d595492f1",
+   "title": "フォローをほぼせずに読者を600人集めた書き手をAIに数えさせたら、有料noteは9日目に出していた｜台帳No.66【A",
+   "published": "2026-10-22 08:28",
+   "batch": 4
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/daigaku_study/n/n9e9da3ac4bbb",
+   "title": "【山口大学 ひと・まち未来共創学環】面接・願書対策 | 学校推薦型選抜Ⅰ 想定質問100〔2027年度〕",
+   "published": "2026-10-21 13:43",
+   "batch": 4
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/tatsu_kawata/n/n214664bbc66e",
+   "title": "公開中のnote記事128本を機械で書き換えた手順と、更新前に数えた副作用",
+   "published": "2026-10-21 18:27",
+   "batch": 4
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/chiho_se1000/n/nc5e9748f2b74",
+   "title": "副業の立ち上げ、その後（第2週）。フォロワーは14人から55人、売上は0円のまま。先に AI の API 代が出ていき始",
+   "published": "2026-10-22 12:41",
+   "batch": 4
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/toukou_zenya/n/nf290377a5763",
+   "title": "今日は、AIが聞く番です。あなたの経験から「書けること」を掘り出す。",
+   "published": "2026-10-22 12:34",
+   "batch": 4
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/jyori/n/nc72132ed8428",
+   "title": "AIを使った個人ゲーム制作、行き当たりばったりの開発をしていませんか？",
+   "published": "2026-10-21 23:23",
+   "batch": 4
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/long_racoon458/n/n9e135d9f6fee",
+   "title": "生成AIニュース5選（2026/10/22）AI攻撃・仕事の自動化・AI録音機",
+   "published": "2026-10-22 06:40",
+   "batch": 4
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/matsuryu_note/n/n819c28a48881",
+   "title": "AIを入れて終わりにしない理由。現場が自分で回せるまで、一緒にやります",
+   "published": "2026-10-21 20:36",
+   "batch": 4
+  },
+  {
+   "tag": "AI活用",
+   "group": "listed",
+   "url": "https://note.com/ekusiek99/n/nf107be543edb",
+   "title": "【2026年最新版】マーケティングスキルマップを公開！初心者が身につけるべき知識・スキルを完全整理",
+   "published": "2026-10-21 18:23",
+   "batch": 4
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/chushou_it_hack/n/n7c2485e5be0b",
+   "title": "「忙しいです」しか言えない総務を卒業する｜作業日報を分単位で記録して業務量を見える化するExcelツール",
+   "published": "2026-10-22 05:57",
+   "batch": 4
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/kinoko_kinokino/n/nc09920c80c55",
+   "title": "独学で2級に2回落ちた私が、DVD講座で合格。そのあと在宅経理になるまで",
+   "published": "2026-10-21 23:58",
+   "batch": 4
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/daigaku_shokuin1/n/nb16e0a0e701e",
+   "title": "【大学別】東京農業大学・専任職員 中途採用の二次面接対策｜中途向け想定質問100問と模範回答",
+   "published": "2026-10-24 01:02",
+   "batch": 4
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/kirinjistudy/n/nd878767ef65f",
+   "title": "AIをこれだけ使っているのに、一番苦労するのはnote記事制作だった",
+   "published": "2026-10-21 23:41",
+   "batch": 4
+  },
+  {
+   "tag": "業務改善",
+   "group": "unlisted",
+   "url": "https://note.com/inagora/n/nee58eda158d0",
+   "title": "日本酒PB「銀の雫」ヒットの裏側。日中の架け橋としてブランドの魅力を世界へ届けるInagora中国/ヤンルーさんのリアル",
+   "published": "2026-10-21 16:29",
+   "batch": 4
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/jgiajfid_5293/n/ne3cd3add3eac",
+   "title": "巣箱点検の記録をAIでつなぐ――養蜂の巡回支援という仮説",
+   "published": "2026-10-21 23:37",
+   "batch": 4
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/t_tkyk/n/n63da05966ff6",
+   "title": "新人の仕事は「AIの見張り役」に。Josh Bersin社が描く「HR 2030」の人事組織【HR Tech'26 in",
+   "published": "2026-10-22 04:17",
+   "batch": 4
+  },
+  {
+   "tag": "業務改善",
+   "group": "listed",
+   "url": "https://note.com/tenson/n/n7f4996c713e5",
+   "title": "最近、トレードしてません。代わりに色んなことやりすぎてます。",
+   "published": "2026-10-22 00:24",
+   "batch": 4
+  },
+  {
+   "tag": "AI活用",
+   "group": "unlisted",
+   "url": "https://note.com/kincomic/n/nd790c0216c18",
+   "title": "【50%ポイント還元】文藝春秋 電書の森2026（11/5まで）",
+   "published": "2026-10-24 09:52",
+   "batch": 4
+  }
+ ]
+}

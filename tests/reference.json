@@ -1,0 +1,12 @@
+{
+  "_note": "記事の材料（note観測で分かったこと、10/20〜10/25）に載せた数字。10/21 05:41〜10/24 00:51 の定時観測37回から出したもの。取り込みや計算を変えたら、py -m observatory check で同じ数字が出るかを確かめる。",
+  "run_to": "2026-10-24 00:51",
+  "runs": 37,
+  "entry_window": ["2026-10-21 09:00", "2026-10-22 12:00"],
+  "unique_window": ["2026-10-21 12:00", "2026-10-22 12:00"],
+  "tags": {
+    "業務改善": {"entered": 43, "n": 84, "unique_new": 78, "new_depth_h": 19.6, "pop_age_days": 0.8, "pop_likes": 14},
+    "AI活用": {"entered": 28, "n": 331, "unique_new": 299, "new_depth_h": 5.6, "pop_age_days": 95.4, "pop_likes": 25}
+  },
+  "scan_pop_age_days": {"AI副業": 0.6, "業務改善": 1.0, "AI活用": 97.9, "ChatGPT": 101.6, "DX推進": 103.8, "Claude": 13.5}
+}

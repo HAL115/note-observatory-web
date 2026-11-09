@@ -1,0 +1,70 @@
+# noteのページを定時に読んで、観測のCSVをリポジトリに足す。
+# 読むのはキーワードページ（人気・新着）、カテゴリページ（棚）、タグ探しのページだけ。ログインしない。
+# サイトは Cloudflare Pages が、このリポジトリへの push をきっかけに作り直す（README を見る）。
+name: observe
+
+on:
+  schedule:
+    - cron: "50 21,9 * * *"   # 6タグ：日本時間 06:50 と 18:50
+    - cron: "40 7 * * *"      # 棚：日本時間 16:40（毎日10カテゴリ）
+    - cron: "20 1 * * 0,3"    # タグ探し：日本時間 10:20（日・水）
+  workflow_dispatch:
+    inputs:
+      what:
+        description: "何を観測するか"
+        type: choice
+        options: [series, shelves, scans]
+        default: series
+
+concurrency:
+  group: observe
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 何を観測するか決める
+        id: what
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "what=${{ inputs.what }}" >> "$GITHUB_OUTPUT"
+          else
+            case "${{ github.event.schedule }}" in
+              "40 7 * * *")   echo "what=shelves" >> "$GITHUB_OUTPUT" ;;
+              "20 1 * * 0,3") echo "what=scans"   >> "$GITHUB_OUTPUT" ;;
+              *)              echo "what=series"  >> "$GITHUB_OUTPUT" ;;
+            esac
+          fi
+      - name: データベースを CSV から作り直す（棚・タグ探しは、次に見る場所をここから決める）
+        run: python -m observatory ingest --rebuild
+      - name: 観測する
+        run: python -m observatory collect ${{ steps.what.outputs.what }}
+      - name: 観測の CSV と記録をリポジトリに足す（ここまで済めば、あとで失敗しても観測は残る）
+        run: |
+          git config user.name "observatory-bot"
+          git config user.email "observatory-bot@users.noreply.github.com"
+          git add data/raw analysis/collect_status.json
+          if git diff --cached --quiet; then
+            echo "足すものがない"; exit 0
+          fi
+          git commit -m "observe: ${{ steps.what.outputs.what }} $(TZ=Asia/Tokyo date '+%Y-%m-%d %H:%M')"
+          git pull --rebase origin ${{ github.ref_name }}
+          git push
+      - name: 取り込んで、数字とサイトを確かめる
+        run: |
+          python -m observatory ingest
+          python -m observatory check
+          python -m observatory build
+          python -m observatory export
+          python -m unittest discover tests

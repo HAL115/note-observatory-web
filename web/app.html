@@ -1,0 +1,1427 @@
+<title>note狙い目観測</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=IBM+Plex+Sans+JP:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 観測所の作業台：上に「いま何をすべきか」、下へ行くほど根拠が深くなる。タブで面を切りかえ、どの面でも数字には順位と位置（上位何%）を添える */
+:root{
+  --bg:#f3f4f0; --panel:#ffffff; --ink:#17262a; --muted:#56666a; --faint:#869396; --line:#d8ddd5; --line2:#e9ece6;
+  --accent:#1f6f78; --accent-ink:#ffffff; --accent-soft:#e1eeee; --accent-mid:#9cc6ca;
+  --good:#2b7a4b; --good-soft:#e0f1e6; --warn:#9c5f17; --warn-soft:#f6ead9; --bad:#a23b3b; --bad-soft:#f5e1df;
+  --hot:#b4551f; --hot-soft:#f8e6da;
+  --chart-grid:#e6e9e3; --chart-zone:#eaf3ef; --dot-old:#a7b2b3;
+  --f-display:'Zen Kaku Gothic New','Hiragino Sans','Noto Sans JP',sans-serif;
+  --f-body:'IBM Plex Sans JP','Hiragino Sans','Noto Sans JP',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#101719; --panel:#172124; --ink:#e4ecea; --muted:#9db0b1; --faint:#71878a; --line:#2a393c; --line2:#202e31;
+  --accent:#62b6be; --accent-ink:#0d1a1c; --accent-soft:#1b3235; --accent-mid:#2f6066;
+  --good:#71c793; --good-soft:#18301f; --warn:#e2a660; --warn-soft:#352816; --bad:#e58a84; --bad-soft:#3a201f;
+  --hot:#ee9a63; --hot-soft:#3a2416;
+  --chart-grid:#243235; --chart-zone:#16282a; --dot-old:#55686b; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#101719; --panel:#172124; --ink:#e4ecea; --muted:#9db0b1; --faint:#71878a; --line:#2a393c; --line2:#202e31;
+  --accent:#62b6be; --accent-ink:#0d1a1c; --accent-soft:#1b3235; --accent-mid:#2f6066;
+  --good:#71c793; --good-soft:#18301f; --warn:#e2a660; --warn-soft:#352816; --bad:#e58a84; --bad-soft:#3a201f;
+  --hot:#ee9a63; --hot-soft:#3a2416;
+  --chart-grid:#243235; --chart-zone:#16282a; --dot-old:#55686b; color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 56px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.3}
+h1{font-size:28px;font-weight:900;letter-spacing:.01em}
+h2{font-size:20px;font-weight:700}
+h3{font-size:16px;font-weight:700}
+p{margin:0}
+ul,ol{margin:0;padding-left:1.3em}
+a{color:var(--accent)}
+.num,td.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.muted{color:var(--muted)} .small{font-size:13px} .tiny{font-size:12px;color:var(--faint)}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.top .lead{color:var(--muted);font-size:14px;max-width:66ch}
+.status{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12.5px;color:var(--muted)}
+.status b{color:var(--ink);font-weight:600}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--line);padding-bottom:8px}
+nav.tabs a{text-decoration:none;color:var(--muted);padding:6px 12px;border-radius:999px;font-weight:600;font-size:14px;white-space:nowrap}
+nav.tabs a:hover{color:var(--ink)}
+nav.tabs a[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel.hi{border-color:var(--accent-mid)}
+.head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:14px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:12px}
+.tile{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;background:var(--panel);min-width:0}
+.tile .k{font-size:12px;color:var(--muted);letter-spacing:.04em}
+.tile .v{font-family:var(--f-display);font-size:24px;font-weight:700;line-height:1.25}
+.tile .v small{font-size:13px;color:var(--muted);font-weight:500;font-family:var(--f-body)}
+.tile .h{font-size:12px;color:var(--faint)}
+.chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.6}
+.chip.good{background:var(--good-soft);color:var(--good)} .chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)} .chip.mid{background:var(--accent-soft);color:var(--accent)}
+.chip.hot{background:var(--hot-soft);color:var(--hot)}
+.chip.none{background:transparent;color:var(--faint);border:1px dashed var(--line)}
+.rank{display:inline-flex;align-items:baseline;gap:3px;font-family:var(--f-mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.rank b{font-family:var(--f-display);font-size:15px;color:var(--ink)}
+.rank.r1 b,.rank.r2 b,.rank.r3 b{color:var(--hot)}
+.medal{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-family:var(--f-display);font-weight:900;font-size:15px;flex:none}
+.medal.m1{background:var(--hot);color:#fff}
+.scroll{overflow-x:auto;min-width:0}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:7px 9px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:middle}
+th{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.03em;white-space:nowrap;position:sticky;top:0;background:var(--panel);z-index:1}
+td.n,th.n{text-align:right;white-space:nowrap}
+td.nm{white-space:nowrap}
+td.wrap{white-space:normal;min-width:16rem}
+th[aria-sort="ascending"],th[aria-sort="descending"]{color:var(--ink)}
+button.sort{border:0;background:none;padding:0;margin:0;cursor:pointer;display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:600;letter-spacing:.03em;color:inherit}
+button.sort .arr{font-size:10px;color:var(--faint)}
+th[aria-sort="ascending"] .arr,th[aria-sort="descending"] .arr{color:var(--accent)}
+tr.pick{cursor:pointer} tr.pick:hover td{background:var(--accent-soft)}
+tr.sel td{background:var(--accent-soft)}
+tr.ref td{opacity:.72}
+td.heat{position:relative}
+.tbox{max-height:34rem;overflow:auto}
+.bar{height:8px;border-radius:4px;background:var(--chart-grid);flex:1;min-width:44px;position:relative;overflow:hidden}
+.bar>i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:4px}
+.score{display:flex;align-items:center;gap:8px;min-width:120px}
+.score .num{min-width:2ch;text-align:right;font-weight:600}
+.axes{display:flex;flex-direction:column;gap:6px}
+.axis{display:grid;grid-template-columns:7.2em 1fr auto;gap:8px;align-items:center;font-size:13px}
+.axis .bar{height:7px}
+.meter{position:relative;flex:none;width:58px;height:8px;border-radius:4px;
+  background:linear-gradient(90deg,var(--chart-grid) 0 18.5%,transparent 18.5% 21.5%,var(--chart-grid) 21.5% 38.5%,transparent 38.5% 41.5%,var(--chart-grid) 41.5% 58.5%,transparent 58.5% 61.5%,var(--chart-grid) 61.5% 78.5%,transparent 78.5% 81.5%,var(--chart-grid) 81.5% 100%)}
+.meter>i{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--accent);border:2px solid var(--panel)}
+.flag{color:var(--hot);font-weight:700;font-size:12px;white-space:nowrap}
+.up{color:var(--good);font-size:12px;font-weight:600;white-space:nowrap} .down{color:var(--bad);font-size:12px;font-weight:600;white-space:nowrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0;background:var(--panel)}
+.card.top1{border-color:var(--hot);box-shadow:0 0 0 1px var(--hot) inset}
+.card .ttl{display:flex;align-items:center;gap:10px}
+.card .ttl h3{font-size:18px}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px;margin:0}
+.facts dt{color:var(--muted);white-space:nowrap}
+.facts dd{margin:0;min-width:0}
+.guide{border-left:3px solid var(--accent);padding-left:12px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.guide b{font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:none}
+.seg button{border:0;background:var(--panel);padding:5px 11px;cursor:pointer;font-size:13px;color:var(--muted)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 14px;cursor:pointer;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;gap:6px;font-size:14px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn.small{padding:3px 10px;font-size:13px}
+.btn:disabled{opacity:.55;cursor:default}
+label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4px;min-width:0}
+label.inline{flex-direction:row;align-items:center;gap:6px}
+select,input[type=text],input[type=url],input[type=number],input[type=time],input[type=search],textarea{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:7px 10px;width:100%;min-width:0;color:var(--ink)}
+label.inline select,label.inline input{width:auto}
+textarea{min-height:92px;resize:vertical}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}
+.form .wide{grid-column:1/-1}
+.checks{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.checks li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;border-bottom:1px solid var(--line2);padding-bottom:8px}
+.mark{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.mark.ok{background:var(--good-soft);color:var(--good)} .mark.ng{background:var(--bad-soft);color:var(--bad)} .mark.q{background:var(--warn-soft);color:var(--warn)}
+.verdict{border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.verdict.good{background:var(--good-soft)} .verdict.warn{background:var(--warn-soft)} .verdict.bad{background:var(--bad-soft)} .verdict.mid{background:var(--accent-soft)}
+.verdict .big{font-family:var(--f-display);font-size:22px;font-weight:700}
+.insights{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.insights li{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline;font-size:14px}
+.words{display:flex;flex-wrap:wrap;gap:6px}
+.wchip{display:inline-flex;align-items:baseline;gap:5px;border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:13px;white-space:nowrap;background:var(--panel)}
+.wchip b{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-weight:500}
+.wchip.new{border-color:var(--hot);}
+.wchip.new::before{content:"新";color:var(--hot);font-weight:700;font-size:11px}
+.wbars{display:flex;flex-direction:column;gap:6px}
+.wbar{display:grid;grid-template-columns:minmax(90px,170px) 1fr auto;gap:10px;align-items:center;font-size:13.5px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12.5px;color:var(--muted)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.out{border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.branch{border-left:3px solid var(--accent);padding-left:12px;display:flex;flex-direction:column;gap:4px}
+.need{background:var(--warn-soft);color:var(--warn);border-radius:4px;padding:0 4px}
+details summary{cursor:pointer;color:var(--accent);font-weight:600;font-size:14px}
+.empty{color:var(--muted);font-size:14px;padding:12px 0}
+.banner{border:1px solid var(--line);border-left:4px solid var(--warn);background:var(--panel);border-radius:8px;padding:12px 16px;font-size:14px}
+svg{display:block;max-width:100%}
+svg text{fill:var(--ink);font-family:var(--f-body)}
+svg .lbl{fill:var(--muted);font-size:11px}
+svg .lbl2{fill:var(--faint);font-size:10.5px}
+svg .grid{stroke:var(--chart-grid)} svg .axisl{stroke:var(--line)}
+svg .zone{fill:var(--chart-zone)}
+svg .med{stroke:var(--faint);stroke-dasharray:4 4;stroke-width:1;fill:none}
+svg .pt{cursor:pointer}
+svg .pt:hover circle,svg .pt:focus circle{stroke:var(--ink);stroke-width:2}
+.tip{position:fixed;z-index:20;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.14);padding:6px 10px;font-size:12.5px;line-height:1.55;max-width:300px}
+.tip b{font-weight:600}
+@media (max-width:560px){ h1{font-size:23px} .tile .v{font-size:21px} th,td{padding:6px 7px} .panel{padding:14px 14px} }
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+      <h1>note狙い目観測</h1>
+      <p class="lead">noteのカテゴリの棚とタグのページを、ブラウザでログアウトしたまま決まった時刻に見た記録から、どこに出せば読まれやすいか、何を書けばよいかを数字で示します。</p>
+    </div>
+    <div class="status" id="status"><span>読み込み中…</span></div>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="画面">
+    <a href="#home" data-v="home">いまの狙い目</a>
+    <a href="#cats" data-v="cats">カテゴリ</a>
+    <a href="#words" data-v="words">棚の言葉</a>
+    <a href="#tags" data-v="tags">タグ</a>
+    <a href="#timing" data-v="timing">出す時刻</a>
+    <a href="#check" data-v="check">記事を調べる</a>
+    <a href="#outline" data-v="outline">骨組みを作る</a>
+    <a href="#mine" data-v="mine">自分の記事</a>
+    <a href="#proof" data-v="proof">仮説と根拠</a>
+    <a href="#about" data-v="about">数字の出どころ</a>
+  </nav>
+  <main id="view" style="display:flex;flex-direction:column;gap:18px;min-width:0"><section class="panel"><p class="muted">観測データを読み込んでいます…</p></section></main>
+</div>
+<div class="tip" id="tip" hidden></div>
+<script>
+(() => {
+'use strict';
+// ---------- 小さな道具 ----------
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const fmt = (v, d = 0) => !isNum(v) ? '—' : Number(v).toLocaleString('ja-JP', { maximumFractionDigits: d, minimumFractionDigits: 0 });
+const pctTxt = (v) => !isNum(v) ? '—' : fmt(v) + '%';
+const hrs = (h) => !isNum(h) ? '—' : h < 48 ? fmt(h, h < 10 ? 1 : 0) + '時間' : fmt(h / 24, 1) + '日';
+const days = (d) => !isNum(d) ? '—' : d < 2 ? fmt(d * 24, 0) + '時間' : fmt(d, 1) + '日';
+const baseLabel = (C) => C.base_kind === 'rolling' ? `${md(C.base_from).split(' ')[0]}〜${md(C.base_run).split(' ')[0]}の巡回` : `${md(C.base_run)}の一巡`;
+const md = (s) => { const m = String(s || '').match(/\d{4}-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/); return m ? `${+m[1]}/${+m[2]} ${m[3]}:${m[4]}` : (s || '—'); };
+const hhmm = (s) => { const m = String(s || '').match(/(\d{2}):(\d{2})/); return m ? `${+m[1]}:${m[2]}` : '—'; };
+const median = (a) => { const s = a.filter(isNum).sort((x, y) => x - y); if (!s.length) return null; const m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const quant = (a, p) => { const s = a.filter(isNum).sort((x, y) => x - y); if (!s.length) return null; return s[Math.min(s.length - 1, Math.floor(p * (s.length - 1) + 0.5))]; };
+// 下から何%の位置か（build.py の pct_rank と同じ決め方：同じ値は真ん中の位置）
+const pctRank = (vals, x) => {
+  const vs = vals.filter(isNum); if (!isNum(x) || vs.length < 2) return null;
+  let less = 0, eq = 0; vs.forEach(v => { if (v < x) less++; else if (v === x) eq++; });
+  const pos = eq ? less + (eq - 1) / 2 : less - 0.5;
+  return clamp(100 * pos / (vs.length - 1), 0, 100);
+};
+const topPct = (rank, n) => (!isNum(rank) || !n) ? null : Math.max(1, Math.round(rank / n * 100));
+const PREF = 'nobs:v1';
+const S = {
+  D: null, view: 'home', cat: null, tag: null,
+  sort: { cats: { key: 'total', dir: 'desc' }, words: { key: 'total', dir: 'desc' }, tags: { key: 'total', dir: 'desc' }, own: { key: 'published_at', dir: 'desc' } },
+  f: { catScope: 'all', catQ: '', showRef: true, wordRun: 'now', wordQ: '', wordMin: 3, tagSrc: 'all', trendKey: 'pop_age_days', distSort: 'table', calc: {}, look: '', draft: {}, ol: {} },
+  sample: null, olBusy: false, olCtl: null, olHtml: '', olMd: '',
+};
+try {
+  const p = JSON.parse(localStorage.getItem(PREF) || 'null');
+  if (p && p.sort) Object.keys(S.sort).forEach(k => { if (p.sort[k]) S.sort[k] = p.sort[k]; });
+  if (p && p.f) ['catScope', 'showRef', 'wordRun', 'wordMin', 'tagSrc', 'trendKey', 'distSort'].forEach(k => { if (k in p.f) S.f[k] = p.f[k]; });
+} catch (e) { /* 前の並べ方を思い出せなくても動く */ }
+function savePrefs() { try { localStorage.setItem(PREF, JSON.stringify({ sort: S.sort, f: S.f })); } catch (e) { /* 保存できなくても動く */ } }
+
+// ---------- 言葉 ----------
+const FL = {
+  n: '棚の記事', writers: '書き手', likes_min: 'いちばん少ないスキ', likes_q25: '少ない方から4分の1のスキ', likes_med: 'スキの中央値',
+  likes_q75: '多い方から4分の1のスキ', likes_max: 'いちばん多いスキ', under10_pct: '10スキ未満', fresh24_pct: '24時間以内の記事',
+  age_med_h: '棚の記事の古さ', paid_pct: '有料', speed_med: 'スキの集まる速さ', fresh_likes_med: '24時間以内の記事のスキ',
+  fresh_likes_min: '24時間以内でいちばん少ないスキ', fresh_age_med_h: '24時間以内の記事の公開からの時間', fresh_n: '24時間以内の記事',
+  pop_low: '人気20本のいちばん少ないスキ', pop_q1: '人気20本の少ない方4分の1', pop_likes: '人気20本のスキ中央値', pop_top1: '人気1位のスキ',
+  pop_age_days: '人気20本の古さ', new_per_day: '1日の新着（目安）', qualified: '資格者（/20）', entry_rate: '新着→人気',
+};
+const AX = { entry: '入口の低さ', turnover: '入れかわり', reader: '読者の厚み', competition: '競争の薄さ', total: '狙い目' };
+const BADGE = {
+  low_bar: ['good', '入口が低い'], turnover: ['mid', '毎日入れかわる'], held: ['warn', '古い記事が残る'], paid: ['hot', '有料も並ぶ'],
+  few: ['none', '本数が少ない'], dup: ['none', '同じ棚あり'], not_sweep: ['none', '別の回で比較'],
+};
+const PILL = { supported: 'good', partial: 'mid', weak: 'mid', refuted: 'bad', testing: 'warn', untested: 'none' };
+const SURF = { n: '新着', p: '人気', s: '棚' };
+
+function rankChip(rank, n, label) {
+  if (!isNum(rank)) return '<span class="rank">—</span>';
+  const tp = topPct(rank, n);
+  return `<span class="rank r${rank}" title="${esc(label || '')}${n}中${rank}位"><b>${rank}</b>位<span>/${n}</span>${tp != null ? `<span>・上位${tp}%</span>` : ''}</span>`;
+}
+function scoreBar(v, cls = '') {
+  if (!isNum(v)) return '<span class="tiny">—</span>';
+  return `<div class="score ${cls}"><span class="num">${fmt(v)}</span><span class="bar"><i style="width:${clamp(v, 0, 100)}%;${v >= 70 ? 'background:var(--hot)' : ''}"></i></span></div>`;
+}
+function verdictOf(v) {
+  if (!isNum(v)) return { cls: 'none', text: 'データ待ち' };
+  if (v >= 65) return { cls: 'hot', text: '狙い目' };
+  if (v >= 50) return { cls: 'good', text: '有望' };
+  if (v >= 40) return { cls: 'mid', text: '条件しだい' };
+  return { cls: 'warn', text: '入りにくい' };
+}
+function meter(p) { return isNum(p) ? `<span class="meter" aria-hidden="true"><i style="left:${clamp(p, 3, 97).toFixed(0)}%"></i></span>` : ''; }
+const LV = ['低い', 'やや低い', 'ふつう', 'やや高い', '高い'];
+const lv = (p) => isNum(p) ? LV[Math.min(4, Math.floor(p / 20))] : '—';
+function badges(list) { return (list || []).map(b => BADGE[b] ? `<span class="chip ${BADGE[b][0]}">${BADGE[b][1]}</span>` : '').join(' '); }
+
+// ---------- 吹き出し ----------
+const tip = () => $('#tip');
+document.addEventListener('pointermove', (e) => {
+  const el = e.target.closest && e.target.closest('[data-tip]');
+  const t = tip(); if (!t) return;
+  if (!el) { t.hidden = true; return; }
+  const lines = String(el.getAttribute('data-tip')).split('\n');
+  t.innerHTML = lines.map((l, i) => i === 0 ? `<b>${esc(l)}</b>` : `<div>${esc(l)}</div>`).join('');
+  t.hidden = false;
+  const w = t.offsetWidth, h = t.offsetHeight;
+  let x = e.clientX + 14, y = e.clientY + 14;
+  if (x + w > innerWidth - 8) x = Math.max(8, e.clientX - w - 14);
+  if (y + h > innerHeight - 8) y = Math.max(8, e.clientY - h - 14);
+  t.style.left = x + 'px'; t.style.top = y + 'px';
+}, { passive: true });
+document.addEventListener('pointerleave', () => { const t = tip(); if (t) t.hidden = true; });
+document.addEventListener('scroll', () => { const t = tip(); if (t) t.hidden = true; }, { passive: true, capture: true });
+
+// ---------- 並べ替えのできる表 ----------
+// cols: [{k, label, cls, val(r), cell(r), dir(+1 大きいほど良い / -1 小さいほど良い / 0), heat:true, tipf(r)}]
+function sortRows(rows, table, cols) {
+  const cur = S.sort[table] || {}; const col = cols.find(c => c.k === cur.key) || cols[0];
+  const f = col.val || (r => r[col.k]); const dir = cur.dir === 'asc' ? 1 : -1;
+  return rows.slice().sort((a, b) => {
+    const x = f(a), y = f(b); const nx = x == null || x === '' || (typeof x === 'number' && !isFinite(x)), ny = y == null || y === '' || (typeof y === 'number' && !isFinite(y));
+    if (nx && ny) return 0; if (nx) return 1; if (ny) return -1;
+    const c = typeof x === 'string' ? x.localeCompare(String(y), 'ja') : x - y;
+    return c * dir;
+  });
+}
+function thead(table, cols) {
+  const cur = S.sort[table] || {};
+  return '<tr>' + cols.map(c => {
+    if (c.nosort) return `<th class="${c.cls || ''}">${c.label}</th>`;
+    const on = cur.key === c.k; const st = on ? (cur.dir === 'asc' ? 'ascending' : 'descending') : 'none';
+    return `<th class="${c.cls || ''}" aria-sort="${st}"${c.help ? ` title="${esc(c.help)}"` : ''}><button type="button" class="sort" data-table="${table}" data-key="${c.k}" data-first="${c.first || (c.dir === -1 ? 'asc' : 'desc')}">${c.label}<span class="arr" aria-hidden="true">${on ? (cur.dir === 'asc' ? '▲' : '▼') : '↕'}</span></button></th>`;
+  }).join('') + '</tr>';
+}
+// 列ごとの位置（基準の行の中で）。良い向きにそろえた 0〜100
+function colPos(refRows, col) {
+  const f = col.val || (r => r[col.k]);
+  const vals = refRows.map(f).filter(isNum);
+  return (r) => { const p = pctRank(vals, f(r)); if (p == null || !col.dir) return null; return col.dir > 0 ? p : 100 - p; };
+}
+function heatStyle(g) {
+  if (!isNum(g)) return '';
+  if (g >= 50) return `background:color-mix(in srgb, var(--good) ${Math.round((g - 50) / 50 * 26)}%, transparent)`;
+  return `background:color-mix(in srgb, var(--bad) ${Math.round((50 - g) / 50 * 18)}%, transparent)`;
+}
+function tbody(rows, cols, refRows, rowAttr) {
+  const pos = {}; cols.forEach(c => { if (c.heat) pos[c.k] = colPos(refRows, c); });
+  return rows.map(r => `<tr ${rowAttr ? rowAttr(r) : ''}>` + cols.map(c => {
+    const g = c.heat ? pos[c.k](r) : null;
+    const t = c.tipf ? c.tipf(r, g) : (c.heat && isNum(g) ? `${c.title || c.label}\n良い向きで下から${fmt(g)}%の位置（${lv(g)}）` : null);
+    return `<td class="${c.cls || ''}${c.heat ? ' heat' : ''}" style="${c.heat ? heatStyle(g) : ''}"${t ? ` data-tip="${esc(t)}"` : ''}>${c.cell ? c.cell(r, g) : esc(r[c.k] ?? '—')}</td>`;
+  }).join('') + '</tr>').join('');
+}
+document.addEventListener('click', (e) => {
+  const b = e.target.closest('button.sort'); if (!b) return;
+  const t = b.dataset.table, k = b.dataset.key; const cur = S.sort[t] || {};
+  S.sort[t] = cur.key === k ? { key: k, dir: cur.dir === 'asc' ? 'desc' : 'asc' } : { key: k, dir: b.dataset.first || 'desc' };
+  savePrefs(); render();
+});
+
+// ---------- 図の道具 ----------
+const svgOpen = (W, H, label, minW = 0) => `<svg viewBox="0 0 ${W} ${H}" width="100%" style="${minW ? `min-width:${minW}px;` : ''}max-width:${W}px" role="img" aria-label="${esc(label)}">`;
+const logx = (v, lo, hi, a, b) => a + (Math.log10(Math.max(lo, v)) - Math.log10(lo)) / (Math.log10(hi) - Math.log10(lo)) * (b - a);
+function placeLabels(items, bounds) {
+  // items: [{x,y,text,size,prio}] → 重ならない所だけ返す
+  const placed = []; const out = [];
+  const fits = (b) => b.x >= bounds.l && b.x + b.w <= bounds.r && b.y >= bounds.t && b.y + b.h <= bounds.b && !placed.some(p => b.x < p.x + p.w && p.x < b.x + b.w && b.y < p.y + p.h && p.y < b.y + b.h);
+  items.slice().sort((a, b) => (b.prio || 0) - (a.prio || 0)).forEach(it => {
+    const w = [...it.text].length * it.size * 0.98 + 4, h = it.size + 4;
+    const cands = [{ x: it.x + 9, y: it.y - h / 2, a: 'start' }, { x: it.x - 9 - w, y: it.y - h / 2, a: 'end' }, { x: it.x - w / 2, y: it.y - h - 7, a: 'middle' }, { x: it.x - w / 2, y: it.y + 7, a: 'middle' }];
+    for (const c of cands) { const b = { x: c.x, y: c.y, w, h }; if (fits(b)) { placed.push(b); out.push({ ...it, lx: c.a === 'start' ? c.x : c.a === 'end' ? c.x + w : c.x + w / 2, ly: c.y + h - 4, anchor: c.a }); break; } }
+  });
+  return out;
+}
+function sparkSvg(series, fmtFn) {
+  const pts = series.filter(p => isNum(p.v));
+  if (pts.length < 2) return '<span class="tiny">推移は2回分の観測から出ます</span>';
+  const W = 220, H = 42, P = 4; const vs = pts.map(p => p.v); const lo = Math.min(...vs), hi = Math.max(...vs);
+  const X = i => P + i / (pts.length - 1) * (W - 2 * P); const Y = v => H - P - ((v - lo) / ((hi - lo) || 1)) * (H - 2 * P);
+  const d = pts.map((p, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(p.v).toFixed(1)).join(' ');
+  const last = pts[pts.length - 1];
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" role="img" aria-label="推移"><path d="${d} L ${X(pts.length - 1)} ${H - P} L ${X(0)} ${H - P} Z" fill="var(--accent-soft)"/><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2"/><circle cx="${X(pts.length - 1)}" cy="${Y(last.v)}" r="3.5" fill="var(--accent)"/></svg><span class="tiny">${pts.length}回の観測。最初 ${esc(fmtFn(pts[0].v))} → 最新 ${esc(fmtFn(last.v))}</span>`;
+}
+
+// ---------- データの下ごしらえ ----------
+function prep(D) {
+  const C = D.categories;
+  const cats = C.items;
+  cats.forEach(c => {
+    c.cur = c.latest || c.base;
+    c.big = c.depth === 1 ? c.short : (c.parent || c.short);
+    c.label = c.depth === 1 ? c.short : `${c.short}（${c.parent || ''}）`;
+  });
+  const ref = cats.filter(c => c.in_ref);
+  const nRef = C.rank_of.total;
+  // 言葉：カテゴリごとの、いちばん新しい回の棚の言葉
+  const words = [];
+  cats.forEach(c => {
+    if (c.same_as) return;
+    const runs = [c.base].concat(c.latest ? [c.latest] : []);
+    runs.forEach(s => s.words.forEach(w => words.push({ ...w, cat: c, run: s.run, now: s === c.cur })));
+  });
+  const wordRuns = [...new Set(words.map(w => w.run))].sort();
+  const tags = D.tags.items;
+  tags.forEach(t => { t.key = t.tag + '|' + t.source; t.sheet = (D.sheet && D.sheet.tags || []).find(x => x.tag === t.tag) || null; });
+  const trendBy = {}; (D.trend || []).forEach(r => { (trendBy[r.tag] = trendBy[r.tag] || []).push(r); });
+  Object.values(trendBy).forEach(a => a.sort((x, y) => x.run_at.localeCompare(y.run_at)));
+  const entryBy = {}; (D.entries || []).forEach(e => { entryBy[e.tag] = e; });
+  return { D, C, cats, ref, nRef, words, wordRuns, tags, trendBy, entryBy, overall: C.overall, byPath: Object.fromEntries(cats.map(c => [c.path, c])) };
+}
+const catPos = (field, c, dir) => { const p = pctRank(S.D.ref.map(x => x[field]), c[field]); return p == null ? null : dir < 0 ? 100 - p : p; };
+
+// ---------- カテゴリの言葉づかい ----------
+const winTxt = (w) => w ? `${w.from}〜${(w.from + 2) % 24}時台` : '—';
+function topWords(c, k = 3) {
+  return c.cur.words.filter(w => w.n >= 3 && w.scores && isNum(w.scores.total)).sort((a, b) => b.scores.total - a.scores.total).slice(0, k);
+}
+function wordChips(ws) {
+  return `<span class="words">${ws.map(w => `<span class="wchip${w.is_new ? ' new' : ''}" data-tip="${esc(`「${w.word}」の棚\n記事${w.n}本・スキ ${fmt(w.likes_min)}〜${fmt(w.likes_max)}（中央値${fmt(w.likes_med)}）\n24時間以内 ${pctTxt(w.fresh_pct)}・古さ ${hrs(w.age_med_h)}${w.is_new ? '\n前の回にはなかった言葉' : ''}`)}">${esc(w.word)}<b>${fmt(w.likes_med)}</b></span>`).join('')}</span>`;
+}
+function paceTxt(c) {
+  const s = c.cur;
+  if (!s.fresh_n) return `${md(s.run)}の棚に、24時間以内の記事は並んでいませんでした`;
+  return `${md(s.run)}の棚では、24時間以内の記事${s.fresh_n}本が公開から約${hrs(s.fresh_age_med_h)}で中央値${fmt(s.fresh_likes_med)}スキ（いちばん少ない${fmt(s.fresh_likes_min)}スキ）`;
+}
+function guideFor(c) {
+  const s = c.cur, ws = topWords(c, 3);
+  const out = [];
+  out.push(`<div><b>分類させる</b>　本文とタイトルで「${esc(c.short)}」の読者の問いに答える。noteのAIが本文を読んで分類を決めると見ています（仮説H33・H34）。${c.parent ? `大カテは「${esc(c.parent)}」。` : ''}</div>`);
+  if (ws.length) out.push(`<div><b>狙う言葉</b>　いま棚になっている言葉のうち入りやすいのは ${ws.map(w => `「${esc(w.word)}」（中央値${fmt(w.likes_med)}スキ）`).join('、')}。棚の言葉は日によって入れかわります。</div>`);
+  out.push(`<div><b>最初の目安</b>　${paceTxt(c)}。これより少ないスキでも並んでいる記事があります。</div>`);
+  if (c.publish_window) out.push(`<div><b>出す時間帯</b>　棚の新しい記事は ${winTxt(c.publish_window)} に出たものが${fmt(c.publish_window.share)}%（${c.publish_window.n}/${c.publish_window.total}本）。「出す時刻」の面も合わせて見てください。</div>`);
+  out.push(`<div><b>有料</b>　棚の記事の${pctTxt(c.paid_pct)}が有料${c.paid_pct >= 15 ? '。有料でも棚に並んでいます' : c.paid_pct <= 3 ? '。有料はほとんど並んでいません' : ''}。</div>`);
+  const l = c.latest;
+  if (l && isNum(l.kept_pct)) out.push(`<div><b>入れかわり</b>　${md(c.base.run)}→${md(l.run)}で、残った記事は${fmt(l.kept_pct)}%。新しく入った${fmt(l.new_n)}本は公開から約${hrs(l.new_age_med_h)}・中央値${fmt(l.new_likes_med)}スキ${l.new_words.length ? `。新しい言葉：${l.new_words.map(esc).join('、')}` : ''}。</div>`);
+  return `<div class="guide">${out.join('')}</div>`;
+}
+function axisRows(c, defs, rankOf) {
+  return `<div class="axes">${['entry', 'turnover', 'reader'].map(a => `<div class="axis" data-tip="${esc(AX[a] + '\n' + (defs[a] ? defs[a].parts.join('\n') : ''))}"><span>${AX[a]}</span><span class="bar"><i style="width:${clamp(c.scores[a] || 0, 0, 100)}%"></i></span><span class="num small">${fmt(c.scores[a])}<span class="tiny"> ${isNum(c.ranks[a]) ? c.ranks[a] + '位' : ''}</span></span></div>`).join('')}</div>`;
+}
+
+// ---------- 画面：いまの狙い目 ----------
+function viewHome() {
+  const { cats, nRef, overall, C } = S.D;
+  const ranked = cats.filter(c => c.in_ref && isNum(c.ranks.total)).sort((a, b) => a.ranks.total - b.ranks.total || b.scores.total - a.scores.total);
+  const top = ranked.slice(0, 5);
+  const t1 = top[0];
+  const defs = S.D.D.score_defs.category;
+  const lead = t1 ? `${C.base_kind === 'rolling' ? `${baseLabel(C)}（${overall.categories}カテゴリの棚。1回10カテゴリずつ、同じ時刻に見た回）で比べると` : `${md(C.base_run)}に${overall.categories}カテゴリの棚を同じ時刻に見ると`}、狙い目の1位は<b>${esc(t1.label)}</b>（${fmt(t1.scores.total)}点）。棚の記事${fmt(overall.articles)}本のうち<b>${fmt(overall.under10_pct)}%が10スキ未満</b>、${fmt(overall.fresh24_pct)}%が公開24時間以内の記事でした。スキが少なくても、分類と言葉が合えば棚に並びます。` : '';
+  const tiles = [
+    ['見たカテゴリ', fmt(overall.categories), `比べたのは${nRef}（同じ棚・本数の少ない所を除く）`],
+    ['棚の記事', fmt(overall.articles) + '<small>本</small>', `書き手 ${fmt(overall.writers)}人・${md(overall.run)}`],
+    ['10スキ未満', fmt(overall.under10_pct) + '<small>%</small>', '少ないスキでも棚に並ぶ記事の割合'],
+    ['24時間以内', fmt(overall.fresh24_pct) + '<small>%</small>', '公開から1日たたない記事の割合'],
+    ['スキの中央値', fmt(overall.likes_med), `真ん中の半分は ${fmt(overall.likes_q25)}〜${fmt(overall.likes_q75)}スキ`],
+    ['有料', fmt(overall.paid_pct) + '<small>%</small>', '棚の記事のうち有料の割合'],
+  ];
+  return `
+  <section class="panel hi">
+    <p style="font-size:15.5px;max-width:72ch">${lead}</p>
+    <div class="tiles">${tiles.map(([k, v, h]) => `<div class="tile"><span class="k">${k}</span><span class="v">${v}</span><span class="h">${h}</span></div>`).join('')}</div>
+  </section>
+  <section class="panel">
+    <div class="head"><h2>いま狙うなら、この5つ</h2><span class="tiny">狙い目 = 入口の低さ×0.4 ＋ 入れかわり×0.3 ＋ 読者の厚み×0.3（${nRef}カテゴリの中での位置）</span></div>
+    <div class="cards">${top.map((c, i) => homeCard(c, i, defs, nRef)).join('')}</div>
+  </section>
+  <div class="grid2">
+    <section class="panel">
+      <div class="head"><h2>入りやすさと読者の地図</h2><span class="tiny">右上ほど、少ないスキで入れて読者もいる棚</span></div>
+      <div class="scroll">${quadSvg(cats.filter(c => !c.same_as))}</div>
+      <div class="legend"><span>右下：入りやすいが、スキは少なめ</span><span>左下：入りにくく、スキも少なめ</span><span><i class="dot" style="background:var(--accent)"></i>入れかわりが速い（濃いほど速い）</span><span><i class="dot" style="background:var(--panel);border:2px solid var(--hot)"></i>狙い目の上位5つ</span><span><i class="dot" style="background:transparent;border:1.5px solid var(--faint)"></i>参考（本数が少ない）</span><span>点を押すと詳しく見られます</span></div>
+    </section>
+    <section class="panel">
+      <h2>目立つ動き</h2>
+      <ul class="insights">${insights().join('')}</ul>
+    </section>
+  </div>`;
+}
+function homeCard(c, i, defs, nRef) {
+  const v = verdictOf(c.scores.total);
+  return `<article class="card${i === 0 ? ' top1' : ''}">
+    <div class="ttl"><span class="medal${i === 0 ? ' m1' : ''}">${c.ranks.total}</span><div style="min-width:0"><h3>${esc(c.label)}</h3><div class="row" style="gap:6px"><span class="chip ${v.cls}">${v.text} ${fmt(c.scores.total)}</span>${rankChip(c.ranks.total, nRef, '狙い目')}</div></div></div>
+    ${axisRows(c, defs)}
+    <dl class="facts">
+      <dt>入る目安</dt><dd>${paceTxt(c)}</dd>
+      <dt>いまの言葉</dt><dd>${wordChips(topWords(c, 3)) || '—'}</dd>
+      <dt>出す時間帯</dt><dd>${c.publish_window ? `${winTxt(c.publish_window)}に出た記事が${fmt(c.publish_window.share)}%` : '—'}</dd>
+    </dl>
+    <div class="row">${badges(c.badges.filter(b => b !== 'dup'))}</div>
+    <div><button class="btn small" type="button" data-cat="${esc(c.path)}">根拠と書き方を見る</button></div>
+  </article>`;
+}
+function quadSvg(list) {
+  const W = 620, H = 480, L = 46, R = 18, T = 28, B = 46;
+  const X = v => L + v / 100 * (W - L - R), Y = v => H - B - v / 100 * (H - T - B);
+  let o = svgOpen(W, H, 'カテゴリごとの、入口の低さと読者の厚み', 420);
+  o += `<rect class="zone" x="${X(50)}" y="${Y(100)}" width="${X(100) - X(50)}" height="${Y(50) - Y(100)}"/>`;
+  [0, 25, 50, 75, 100].forEach(v => { o += `<line class="grid" x1="${X(v)}" x2="${X(v)}" y1="${T}" y2="${H - B}"/><line class="grid" x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="lbl" x="${X(v)}" y="${H - B + 16}" text-anchor="middle">${v}</text><text class="lbl" x="${L - 6}" y="${Y(v) + 4}" text-anchor="end">${v}</text>`; });
+  o += `<line class="med" x1="${X(50)}" x2="${X(50)}" y1="${T}" y2="${H - B}"/><line class="med" x1="${L}" x2="${W - R}" y1="${Y(50)}" y2="${Y(50)}"/>`;
+  o += `<text class="lbl" x="${X(100)}" y="${T - 10}" text-anchor="end" style="fill:var(--accent);font-weight:600">入りやすく、読まれる ↗</text><text class="lbl2" x="${X(0)}" y="${T - 10}">↖ 読まれるが、入口が高い</text>`;
+  o += `<text class="lbl" x="${(L + W - R) / 2}" y="${H - 8}" text-anchor="middle">入口の低さ（点）→</text><text class="lbl" transform="translate(13 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">読者の厚み（点）→</text>`;
+  const pts = list.filter(c => isNum(c.scores.entry) && isNum(c.scores.reader));
+  const labels = placeLabels(pts.map(c => ({ c, x: X(c.scores.entry), y: Y(c.scores.reader), text: c.short, size: 11.5, prio: (c.scores.total || 0) + (c.in_ref ? 100 : 0) })), { l: L, r: W - 2, t: 2, b: H - B });
+  pts.forEach(c => {
+    const x = X(c.scores.entry), y = Y(c.scores.reader), tv = c.scores.turnover || 0;
+    const t = `${c.label}\n狙い目 ${fmt(c.scores.total)}（${isNum(c.ranks.total) ? c.ranks.total + '位' : '—'}）\n入口 ${fmt(c.scores.entry)}・入れかわり ${fmt(c.scores.turnover)}・読者 ${fmt(c.scores.reader)}\nスキ中央値 ${fmt(c.likes_med)}・10スキ未満 ${pctTxt(c.under10_pct)}・24時間以内 ${pctTxt(c.fresh24_pct)}`;
+    o += `<g class="pt" data-cat="${esc(c.path)}" data-tip="${esc(t)}" tabindex="0">${c.in_ref ? `<circle cx="${x}" cy="${y}" r="${c.ranks.total <= 5 ? 8 : 6}" fill="var(--accent)" fill-opacity="${(0.25 + tv / 100 * 0.75).toFixed(2)}" stroke="${c.ranks.total <= 5 ? 'var(--hot)' : 'var(--panel)'}" stroke-width="${c.ranks.total <= 5 ? 2 : 1}"/>` : `<circle cx="${x}" cy="${y}" r="5.5" fill="var(--panel)" stroke="var(--faint)" stroke-width="1.5"/>`}</g>`;
+  });
+  labels.forEach(l => { o += `<text x="${l.lx}" y="${l.ly}" font-size="${l.size}" text-anchor="${l.anchor}" ${l.c.in_ref ? '' : 'class="lbl"'} style="pointer-events:none${l.c.ranks.total <= 5 ? ';font-weight:700' : ''}">${esc(l.text)}</text>`; });
+  return o + '</svg>';
+}
+function insights() {
+  const { cats, ref } = S.D; const out = [];
+  const li = (chip, html) => out.push(`<li><span class="chip ${chip[0]}">${chip[1]}</span><span>${html}</span></li>`);
+  const by = (f, d) => ref.filter(c => isNum(c[f])).slice().sort((a, b) => (a[f] - b[f]) * d);
+  const name = (c) => `<a href="#cats" data-cat="${esc(c.path)}">${esc(c.short)}</a>`;
+  const fastest = by('fresh24_pct', -1).slice(0, 3);
+  li(['mid', '入れかわる'], `24時間以内の記事が多い棚：${fastest.map(c => `${name(c)} ${c.fresh24_pct}%`).join('、')}。毎日新しい席が空きます。`);
+  const low = by('under10_pct', -1).slice(0, 3);
+  li(['good', '入口が低い'], `10スキ未満の記事が多い棚：${low.map(c => `${name(c)} ${c.under10_pct}%`).join('、')}。`);
+  const held = by('fresh24_pct', 1).slice(0, 3);
+  li(['warn', '居座る'], `古い記事が残る棚：${held.map(c => `${name(c)}（24時間以内 ${c.fresh24_pct}%・古さ ${hrs(c.age_med_h)}）`).join('、')}。新しい記事が入りにくい所です。`);
+  const fast = by('speed_med', -1).slice(0, 3);
+  li(['hot', 'スキが速い'], `24時間以内の記事が1時間に集めるスキが多い棚：${fast.map(c => `${name(c)} ${fmt(c.speed_med, 1)}/時`).join('、')}。読者が多い代わりに入口も高めです。`);
+  const paid = by('paid_pct', -1).filter(c => c.paid_pct >= 10).slice(0, 3);
+  if (paid.length) li(['hot', '有料'], `有料記事が多く並ぶ棚：${paid.map(c => `${name(c)} ${c.paid_pct}%`).join('、')}（全体は${S.D.overall.paid_pct}%）。`);
+  const fl = []; cats.filter(c => c.in_ref).forEach(c => c.flags.forEach(f => { if (['likes_max', 'likes_med'].includes(f.field) && f.z > 0) fl.push([c, f]); }));
+  fl.sort((a, b) => b[1].z - a[1].z).slice(0, 2).forEach(([c, f]) => li(['hot', '突出'], `${name(c)}の${FL[f.field]} ${fmt(c[f.field])} は、ほかの棚（中央値 ${fmt(median(ref.map(x => x[f.field])))}）より飛び抜けています。`));
+  const moved = cats.filter(c => c.latest && isNum(c.latest.kept_pct) && !c.same_as).sort((a, b) => a.latest.kept_pct - b.latest.kept_pct).slice(0, 3);
+  if (moved.length) li(['mid', '夜の回'], `${md(moved[0].latest.run)}に見直すと、残った記事が少なかった棚：${moved.map(c => `${name(c)} ${c.latest.kept_pct}%${c.latest.new_words.length ? `（新しい言葉「${esc(c.latest.new_words[0])}」）` : ''}`).join('、')}。`);
+  return out;
+}
+
+// ---------- 画面：カテゴリ ----------
+function catCols() {
+  const nRef = S.D.nRef;
+  return [
+    { k: 'rank', label: '順位', cls: 'n', first: 'asc', val: c => c.ranks.total, cell: c => isNum(c.ranks.total) ? `<span class="rank r${c.ranks.total}"><b>${c.ranks.total}</b></span>${c.in_ref ? '' : '<div class="tiny">参考</div>'}` : '—' },
+    { k: 'name', label: 'カテゴリ', cls: 'nm', first: 'asc', val: c => c.label, cell: c => `<b>${esc(c.short)}</b>${c.parent ? `<div class="tiny">${esc(c.parent)}</div>` : ''}` },
+    { k: 'total', label: '狙い目', val: c => c.scores.total, cell: c => scoreBar(c.scores.total), tipf: c => `狙い目 ${fmt(c.scores.total)}\n${nRef}中${c.ranks.total ?? '—'}位（上位${topPct(c.ranks.total, nRef) ?? '—'}%）` },
+    { k: 'entry', label: '入口', cls: 'n', val: c => c.scores.entry, dir: 1, heat: true, cell: c => fmt(c.scores.entry), tipf: c => `入口の低さ ${fmt(c.scores.entry)}（${c.ranks.entry ?? '—'}位）\n少ない方から4分の1のスキ ${fmt(c.likes_q25)}・10スキ未満 ${pctTxt(c.under10_pct)}` },
+    { k: 'turnover', label: '入れかわり', cls: 'n', val: c => c.scores.turnover, dir: 1, heat: true, cell: c => fmt(c.scores.turnover), tipf: c => `入れかわり ${fmt(c.scores.turnover)}（${c.ranks.turnover ?? '—'}位）\n24時間以内 ${pctTxt(c.fresh24_pct)}・古さ ${hrs(c.age_med_h)}` },
+    { k: 'reader', label: '読者', cls: 'n', val: c => c.scores.reader, dir: 1, heat: true, cell: c => fmt(c.scores.reader), tipf: c => `読者の厚み ${fmt(c.scores.reader)}（${c.ranks.reader ?? '—'}位）\n多い方から4分の1のスキ ${fmt(c.likes_q75)}・速さ ${fmt(c.speed_med, 2)}/時` },
+    { k: 'n', label: '記事', cls: 'n', val: c => c.n, cell: c => fmt(c.n) },
+    { k: 'likes_q25', label: 'スキ¼', cls: 'n', dir: -1, heat: true, val: c => c.likes_q25, cell: c => fmt(c.likes_q25), title: FL.likes_q25 },
+    { k: 'likes_med', label: '中央値', cls: 'n', dir: -1, heat: true, val: c => c.likes_med, cell: c => fmt(c.likes_med) + (c.flags.some(f => f.field === 'likes_med') ? ' <span class="flag">◆</span>' : ''), title: FL.likes_med },
+    { k: 'likes_q75', label: 'スキ¾', cls: 'n', dir: 1, heat: true, val: c => c.likes_q75, cell: c => fmt(c.likes_q75) + (c.flags.some(f => f.field === 'likes_q75') ? ' <span class="flag">◆</span>' : ''), title: FL.likes_q75 },
+    { k: 'likes_max', label: '最大', cls: 'n', val: c => c.likes_max, cell: c => fmt(c.likes_max) + (c.flags.some(f => f.field === 'likes_max') ? ' <span class="flag">◆</span>' : '') },
+    { k: 'under10_pct', label: '10未満', cls: 'n', dir: 1, heat: true, val: c => c.under10_pct, cell: c => pctTxt(c.under10_pct), title: FL.under10_pct },
+    { k: 'fresh24_pct', label: '24時間内', cls: 'n', dir: 1, heat: true, val: c => c.fresh24_pct, cell: c => pctTxt(c.fresh24_pct), title: FL.fresh24_pct },
+    { k: 'age_med_h', label: '古さ', cls: 'n', dir: -1, heat: true, val: c => c.age_med_h, cell: c => hrs(c.age_med_h) + (c.flags.some(f => f.field === 'age_med_h') ? ' <span class="flag">◆</span>' : ''), title: FL.age_med_h },
+    { k: 'speed_med', label: '速さ/時', cls: 'n', dir: 1, heat: true, val: c => c.speed_med, cell: c => fmt(c.speed_med, 2) + (c.flags.some(f => f.field === 'speed_med') ? ' <span class="flag">◆</span>' : ''), title: FL.speed_med },
+    { k: 'fresh_likes_med', label: '新しい記事のスキ', cls: 'n', dir: -1, heat: true, val: c => c.fresh_likes_med, cell: c => c.fresh_n ? `${fmt(c.fresh_likes_med)}<span class="tiny"> /${hrs(c.fresh_age_med_h)}</span>` : '—', title: FL.fresh_likes_med },
+    { k: 'paid_pct', label: '有料', cls: 'n', val: c => c.paid_pct, cell: c => pctTxt(c.paid_pct) + (c.flags.some(f => f.field === 'paid_pct') ? ' <span class="flag">◆</span>' : '') },
+    { k: 'kept', label: '夜の回', cls: 'n', val: c => c.latest ? c.latest.kept_pct : null, cell: c => c.latest && isNum(c.latest.kept_pct) ? `残り${c.latest.kept_pct}%<div class="tiny">${hhmm(c.latest.run)}・新${c.latest.new_n}本</div>` : '<span class="tiny">—</span>' },
+    { k: 'badges', label: '印', nosort: true, cell: c => `<div class="row" style="gap:4px;flex-wrap:nowrap">${badges(c.badges.filter(b => !['few', 'dup', 'not_sweep'].includes(b)))}</div>${c.same_as ? `<div class="tiny">${esc(c.same_as)}と同じ棚</div>` : ''}` },
+  ];
+}
+function visibleCats() {
+  const q = S.f.catQ.trim();
+  return S.D.cats.filter(c => (S.f.catScope === 'all' || c.depth === 1) && (S.f.showRef || c.in_ref) && (!q || c.name.includes(q) || c.path.includes(q)));
+}
+function viewCats() {
+  const cols = catCols();
+  const vis = visibleCats();
+  const rows = sortRows(vis, 'cats', cols);
+  const sel = S.cat && S.D.byPath[S.cat];
+  return `${sel ? viewCatDetail(sel) : ''}
+  <section class="panel">
+    <div class="head"><h2>カテゴリの順位</h2><span class="tiny">${baseLabel(S.D.C)}（${S.D.overall.categories}カテゴリ）。見出しを押すと並べ替え、行を押すと詳しく見られます。</span></div>
+    <div class="toolbar">
+      <input type="search" id="catQ" placeholder="カテゴリを探す" value="${esc(S.f.catQ)}" style="max-width:220px" aria-label="カテゴリを探す">
+      <div class="seg" role="group" aria-label="表示"><button type="button" data-catscope="big" aria-pressed="${S.f.catScope === 'big'}">大カテだけ</button><button type="button" data-catscope="all" aria-pressed="${S.f.catScope === 'all'}">小カテも</button></div>
+      <label class="inline"><input type="checkbox" id="showRef" ${S.f.showRef ? 'checked' : ''}>参考（本数が少ない・同じ棚）も出す</label>
+      <span class="tiny">色：良い向きで上位ほど緑、下位ほど赤。◆は突出した値</span>
+    </div>
+    <div class="scroll tbox"><table><thead>${thead('cats', cols)}</thead><tbody>${tbody(rows, cols, S.D.ref, c => `class="pick${c.in_ref ? '' : ' ref'}${S.cat === c.path ? ' sel' : ''}" data-cat="${esc(c.path)}" tabindex="0"`)}</tbody></table></div>
+  </section>
+  <section class="panel">
+    <div class="head"><h2>棚に並ぶ記事のスキの分布</h2><span class="tiny">1つの点が棚の記事1本。濃い点は24時間以内。箱は真ん中の半分、縦線は中央値。並びは上の表と同じ</span></div>
+    <div class="scroll">${stripSvg(rows)}</div>
+    <div class="legend"><span><i class="dot" style="background:var(--accent)"></i>24時間以内の記事</span><span><i class="dot" style="background:var(--dot-old)"></i>それより古い記事</span><span><i class="dot" style="background:var(--hot)"></i>10スキの線</span></div>
+  </section>`;
+}
+function stripSvg(rows) {
+  const W = 760, rowH = 19, T = 22, L = 150, R = 54; const H = T + rows.length * rowH + 30;
+  const hi = Math.max(1000, ...rows.map(c => c.likes_max || 0)) + 1;
+  const X = v => logx(v + 1, 1, hi, L, W - R);
+  let o = svgOpen(W, H, 'カテゴリごとの、棚の記事のスキの分布', 560);
+  [0, 1, 5, 10, 30, 100, 300, 1000, 3000].filter(v => v + 1 <= hi).forEach(v => { o += `<line class="grid" x1="${X(v)}" x2="${X(v)}" y1="${T - 6}" y2="${H - 26}"/><text class="lbl" x="${X(v)}" y="${H - 10}" text-anchor="middle">${v}</text>`; });
+  o += `<line x1="${X(10)}" x2="${X(10)}" y1="${T - 10}" y2="${H - 26}" stroke="var(--hot)" stroke-width="1.2" stroke-dasharray="3 3"/><text class="lbl" x="${X(10) + 4}" y="${T - 10}" style="fill:var(--hot)">10スキ</text>`;
+  o += `<text class="lbl" x="${W - R + 6}" y="${T - 10}">中央値</text>`;
+  rows.forEach((c, i) => {
+    const y = T + i * rowH + rowH / 2; const s = c.base;
+    o += `<g class="pt" data-cat="${esc(c.path)}" data-tip="${esc(`${c.label}\nスキ ${fmt(s.likes_min)}〜${fmt(s.likes_max)}・中央値 ${fmt(s.likes_med)}\n真ん中の半分 ${fmt(s.likes_q25)}〜${fmt(s.likes_q75)}\n10スキ未満 ${pctTxt(s.under10_pct)}・24時間以内 ${pctTxt(s.fresh24_pct)}`)}">`;
+    o += `<rect x="0" y="${y - rowH / 2}" width="${W}" height="${rowH}" fill="transparent"/>`;
+    o += `<text x="${L - 8}" y="${y + 4}" text-anchor="end" font-size="12" ${c.in_ref ? '' : 'class="lbl"'}>${esc(c.short.length > 11 ? c.short.slice(0, 11) + '…' : c.short)}</text>`;
+    if (isNum(s.likes_q25)) o += `<rect x="${X(s.likes_q25)}" y="${y - 6}" width="${Math.max(2, X(s.likes_q75) - X(s.likes_q25))}" height="12" rx="3" fill="var(--accent-soft)" stroke="var(--accent-mid)"/>`;
+    s.dist.forEach(([lk, age]) => { const fr = isNum(age) && age < 24; o += `<circle cx="${X(lk).toFixed(1)}" cy="${(y + (fr ? -2 : 2)).toFixed(1)}" r="2.6" fill="${fr ? 'var(--accent)' : 'var(--dot-old)'}" fill-opacity="${fr ? .9 : .75}"/>`; });
+    if (isNum(s.likes_med)) o += `<line x1="${X(s.likes_med)}" x2="${X(s.likes_med)}" y1="${y - 8}" y2="${y + 8}" stroke="var(--ink)" stroke-width="2"/>`;
+    o += `<text x="${W - R + 6}" y="${y + 4}" class="num" font-size="12">${fmt(s.likes_med)}</text></g>`;
+  });
+  o += `<text class="lbl" x="${(L + W - R) / 2}" y="${H}" text-anchor="middle">スキ（対数）</text>`;
+  return o + '</svg>';
+}
+function viewCatDetail(c) {
+  const D = S.D, nRef = D.nRef, defs = D.D.score_defs.category, s = c.cur, v = verdictOf(c.scores.total);
+  const COMP = { entry: [['likes_q25', -1], ['under10_pct', 1]], turnover: [['fresh24_pct', 1], ['age_med_h', -1]], reader: [['likes_q75', 1], ['speed_med', 1]] };
+  const comp = (a) => COMP[a];
+  const fv = (f) => f.endsWith('_pct') ? pctTxt(c[f]) : f === 'age_med_h' ? hrs(c[f]) : f === 'speed_med' ? fmt(c[f], 2) + '/時' : fmt(c[f]) + 'スキ';
+  const axisBlock = (a) => `<div class="card" style="gap:6px"><div class="head"><b>${AX[a]}</b>${rankChip(c.ranks[a], nRef, AX[a])}</div>${scoreBar(c.scores[a])}
+    ${comp(a).map(([f, d]) => { const p = catPos(f, c, d); return `<div class="row small" style="justify-content:space-between;gap:6px"><span class="muted">${FL[f]}</span><span><span class="num">${fv(f)}</span>　${meter(p)} <span class="tiny">${lv(p)}</span></span></div>`; }).join('')}</div>`;
+  const wcols = [
+    { k: 'word', label: '言葉', cls: 'nm', first: 'asc', cell: w => `${w.is_new ? '<span class="flag">新</span> ' : ''}<b>${esc(w.word)}</b>` },
+    { k: 'n', label: '記事', cls: 'n', cell: w => fmt(w.n) },
+    { k: 'likes_med', label: 'スキ（少〜中央〜多）', cls: 'n', cell: w => `${fmt(w.likes_min)}〜<b>${fmt(w.likes_med)}</b>〜${fmt(w.likes_max)}` },
+    { k: 'fresh_pct', label: '24時間内', cls: 'n', cell: w => pctTxt(w.fresh_pct) },
+    { k: 'age_med_h', label: '古さ', cls: 'n', cell: w => hrs(w.age_med_h) },
+    { k: 'paid', label: '有料', cls: 'n', cell: w => fmt(w.paid) },
+    { k: 'total', label: '言葉の狙い目', cell: w => w.scores ? `${scoreBar(w.scores.total)}` : '—' },
+  ];
+  const wordsTbl = (st, title) => `<div class="scroll"><table><caption class="tiny" style="text-align:left;caption-side:top;padding-bottom:4px">${title}</caption><thead><tr>${wcols.map(c2 => `<th class="${c2.cls || ''}">${c2.label}</th>`).join('')}</tr></thead><tbody>${st.words.slice().sort((a, b) => (b.scores ? b.scores.total : -1) - (a.scores ? a.scores.total : -1)).map(w => `<tr>${wcols.map(c2 => `<td class="${c2.cls || ''}">${c2.cell(w)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const hist = c.history;
+  return `<section class="panel hi" id="catDetail">
+    <div class="head"><div class="row"><h2>${esc(c.label)}</h2><span class="chip ${v.cls}">${v.text} ${fmt(c.scores.total)}</span>${rankChip(c.ranks.total, nRef, '狙い目')}${badges(c.badges)}</div><button class="btn small" type="button" id="closeCat">閉じる</button></div>
+    ${c.same_as ? `<p class="small muted">${md(c.base.run)}の棚は「${esc(c.same_as)}」と同じ記事・同じ言葉でした。比べる相手には1回だけ数えています。</p>` : ''}
+    ${!c.in_ref && !c.same_as ? `<p class="small muted">棚の記事が${c.n}本と少ないので、比べる相手には入れていません（順位は参考）。</p>` : ''}
+    <div class="grid3">${['entry', 'turnover', 'reader'].map(axisBlock).join('')}</div>
+    <h3>この棚に出すなら</h3>
+    ${guideFor(c)}
+    <div class="grid2">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0"><h3>棚の記事：公開からの時間とスキ</h3><div class="scroll">${ageLikeSvg(s)}</div><p class="tiny">${md(s.run)}の棚${s.n}本。左の帯は公開24時間以内。点線は24時間以内の記事のスキの中央値（${fmt(s.fresh_likes_med)}）。</p></div>
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0"><h3>棚の新しい記事が公開された時台</h3>${hourBars(c.base.pub_hours.map((v2, h) => v2 + ((c.latest && c.latest.pub_hours[h]) || 0)), c.publish_window)}<p class="tiny">24時間以内の記事を、公開した時台ごとに数えたもの（${c.latest ? '2回分の合計' : '1回分'}）。濃い所が出しやすい時間帯。</p></div>
+    </div>
+    <h3>棚の言葉</h3>
+    ${wordsTbl(s, `${md(s.run)}の棚${c.latest ? '（いちばん新しい回）' : ''}`)}
+    ${c.latest ? wordsTbl(c.base, `${md(c.base.run)}の棚（一巡の回）`) : ''}
+    <h3>回ごとの数字</h3>
+    <div class="scroll"><table><thead><tr><th>回</th><th class="n">記事</th><th class="n">スキ ¼・中央値・¾</th><th class="n">10未満</th><th class="n">24時間内</th><th class="n">古さ</th><th class="n">新しい記事のスキ</th><th class="n">前の回から残った</th><th class="n">新しく入った</th></tr></thead><tbody>${hist.map(h => `<tr><td class="nm">${md(h.run)}</td><td class="n">${fmt(h.n)}</td><td class="n">${fmt(h.likes_q25)}・<b>${fmt(h.likes_med)}</b>・${fmt(h.likes_q75)}</td><td class="n">${pctTxt(h.under10_pct)}</td><td class="n">${pctTxt(h.fresh24_pct)}</td><td class="n">${hrs(h.age_med_h)}</td><td class="n">${fmt(h.fresh_likes_med)}<span class="tiny"> /${hrs(h.fresh_age_med_h)}</span></td><td class="n">${isNum(h.kept_pct) ? h.kept_pct + '%' : '—'}${h.kept_by === 'author' ? '<span class="tiny">（書き手で照合）</span>' : ''}</td><td class="n">${isNum(h.new_n) ? `${h.new_n}本・${fmt(h.new_likes_med)}スキ/${hrs(h.new_age_med_h)}` : '—'}</td></tr>`).join('')}</tbody></table></div>
+    <p class="tiny">棚のスキは見た時刻で変わります（ビジネスは11/1の10時台に中央値9、17時台に21、22時台に23）。順位は同じ時刻に見た一巡の回どうしで比べています。</p>
+  </section>`;
+}
+function ageLikeSvg(s) {
+  const W = 420, H = 250, L = 40, R = 12, T = 12, B = 34;
+  const pts = s.dist.filter(d => isNum(d[1]));
+  const hiA = Math.max(48, ...pts.map(d => d[1])) + 1, hiL = Math.max(50, ...pts.map(d => d[0])) + 1;
+  const X = a => logx(a + 1, 1, hiA, L, W - R), Y = l => H - B - (Math.log10(l + 1) / Math.log10(hiL)) * (H - T - B);
+  let o = svgOpen(W, H, '公開からの時間とスキ', 300);
+  o += `<rect class="zone" x="${L}" y="${T}" width="${X(24) - L}" height="${H - T - B}"/>`;
+  [0, 3, 12, 24, 72, 168, 720].filter(a => a + 1 <= hiA).forEach(a => { o += `<line class="grid" x1="${X(a)}" x2="${X(a)}" y1="${T}" y2="${H - B}"/><text class="lbl" x="${X(a)}" y="${H - B + 14}" text-anchor="middle">${a < 24 ? a + '時間' : a / 24 + '日'}</text>`; });
+  [0, 3, 10, 30, 100, 300, 1000].filter(l => l + 1 <= hiL).forEach(l => { o += `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(l)}" y2="${Y(l)}"/><text class="lbl" x="${L - 5}" y="${Y(l) + 4}" text-anchor="end">${l}</text>`; });
+  if (isNum(s.fresh_likes_med)) o += `<line class="med" x1="${L}" x2="${X(24)}" y1="${Y(s.fresh_likes_med)}" y2="${Y(s.fresh_likes_med)}"/>`;
+  pts.forEach(([lk, a, paid]) => { const fr = a < 24; o += `<circle cx="${X(a).toFixed(1)}" cy="${Y(lk).toFixed(1)}" r="4" fill="${fr ? 'var(--accent)' : 'var(--dot-old)'}" fill-opacity=".85" ${paid ? 'stroke="var(--hot)" stroke-width="1.6"' : ''} data-tip="${esc(`公開から${hrs(a)}\nスキ ${lk}${paid ? '\n有料' : ''}`)}"/>`; });
+  o += `<text class="lbl" x="${(L + W - R) / 2}" y="${H - 4}" text-anchor="middle">公開からの時間（対数）</text>`;
+  return o + '</svg>';
+}
+function hourBars(arr, win) {
+  const W = 420, H = 130, L = 26, R = 6, T = 10, B = 24; const mx = Math.max(1, ...arr);
+  const bw = (W - L - R) / 24;
+  const inWin = h => win && ((h - win.from + 24) % 24) < 3;
+  let o = svgOpen(W, H, '公開した時台', 300);
+  [0, Math.ceil(mx / 2), mx].forEach(v => { const y = H - B - v / mx * (H - T - B); o += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y}" y2="${y}"/><text class="lbl" x="${L - 4}" y="${y + 4}" text-anchor="end">${v}</text>`; });
+  arr.forEach((v, h) => { const bh = v / mx * (H - T - B); o += `<rect x="${L + h * bw + 1.5}" y="${H - B - bh}" width="${bw - 3}" height="${Math.max(bh, v ? 1 : 0)}" rx="2" fill="${inWin(h) ? 'var(--hot)' : 'var(--accent)'}" fill-opacity="${inWin(h) ? 1 : .55}" data-tip="${esc(`${h}時台に公開\n${v}本`)}"/>`; });
+  [0, 6, 12, 18, 23].forEach(h => { o += `<text class="lbl" x="${L + h * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${h}時</text>`; });
+  return `<div class="scroll">${o}</svg></div>`;
+}
+
+// ---------- 画面：棚の言葉 ----------
+function viewWords() {
+  const { words, wordRuns } = S.D;
+  const run = S.f.wordRun;
+  const q = S.f.wordQ.trim();
+  const base = words.filter(w => (run === 'now' ? w.now : w.run === run));
+  const vis = base.filter(w => w.n >= S.f.wordMin && (!q || w.word.includes(q) || w.cat.name.includes(q)));
+  const ro = S.D.C.word_rank_of;
+  const cols = [
+    { k: 'rank', label: '順位', cls: 'n', first: 'asc', val: w => w.ranks ? w.ranks.total : null, cell: w => w.ranks && isNum(w.ranks.total) ? `<span class="rank r${w.ranks.total}"><b>${w.ranks.total}</b><span>/${ro[w.run] ? ro[w.run].total : '—'}</span></span>` : '—' },
+    { k: 'word', label: '言葉', cls: 'nm', first: 'asc', val: w => w.word, cell: w => `${w.is_new ? '<span class="flag">新</span> ' : ''}<b>${esc(w.word)}</b>` },
+    { k: 'cat', label: 'カテゴリ', cls: 'nm', first: 'asc', val: w => w.cat.short, cell: w => `<a href="#cats" data-cat="${esc(w.cat.path)}">${esc(w.cat.short)}</a>` },
+    { k: 'run', label: '回', cls: 'nm', val: w => w.run, cell: w => md(w.run) },
+    { k: 'total', label: '狙い目', val: w => w.scores ? w.scores.total : null, cell: w => scoreBar(w.scores && w.scores.total) },
+    { k: 'entry', label: '入りやすさ', cls: 'n', dir: 1, heat: true, val: w => w.scores ? w.scores.entry : null, cell: w => fmt(w.scores && w.scores.entry) },
+    { k: 'reader', label: '伸びしろ', cls: 'n', dir: 1, heat: true, val: w => w.scores ? w.scores.reader : null, cell: w => fmt(w.scores && w.scores.reader) },
+    { k: 'n', label: '記事', cls: 'n', val: w => w.n, cell: w => fmt(w.n) },
+    { k: 'likes_min', label: '最少', cls: 'n', dir: -1, heat: true, val: w => w.likes_min, cell: w => fmt(w.likes_min) },
+    { k: 'likes_med', label: '中央値', cls: 'n', dir: -1, heat: true, val: w => w.likes_med, cell: w => fmt(w.likes_med) },
+    { k: 'likes_max', label: '最大', cls: 'n', dir: 1, heat: true, val: w => w.likes_max, cell: w => fmt(w.likes_max) },
+    { k: 'fresh_pct', label: '24時間内', cls: 'n', dir: 1, heat: true, val: w => w.fresh_pct, cell: w => pctTxt(w.fresh_pct) },
+    { k: 'age_med_h', label: '古さ', cls: 'n', dir: -1, heat: true, val: w => w.age_med_h, cell: w => hrs(w.age_med_h) },
+    { k: 'paid', label: '有料', cls: 'n', val: w => w.paid, cell: w => fmt(w.paid) },
+  ];
+  const rows = sortRows(vis, 'words', cols);
+  const easy = base.filter(w => w.n >= 3 && w.scores && isNum(w.scores.entry)).sort((a, b) => b.scores.total - a.scores.total).slice(0, 8);
+  const fresh = base.filter(w => w.is_new).sort((a, b) => (b.scores ? b.scores.total : 0) - (a.scores ? a.scores.total : 0)).slice(0, 10);
+  const li = (w) => `<li><span class="row" style="gap:6px"><b>${esc(w.word)}</b><span class="tiny">${esc(w.cat.short)}・記事${w.n}本・中央値${fmt(w.likes_med)}スキ・24時間内${pctTxt(w.fresh_pct)}</span></span></li>`;
+  return `
+  <div class="grid2">
+    <section class="panel"><div class="head"><h2>入りやすい言葉</h2><span class="tiny">同じ回の言葉の中での点数</span></div><ol class="small" style="display:flex;flex-direction:column;gap:4px">${easy.map(li).join('')}</ol></section>
+    <section class="panel"><div class="head"><h2>新しく出てきた言葉</h2><span class="tiny">前の回にはなかった棚</span></div>${fresh.length ? `<ul class="small" style="display:flex;flex-direction:column;gap:4px">${fresh.map(li).join('')}</ul>` : '<p class="empty">2回以上見たカテゴリで、新しい言葉はまだありません。</p>'}<p class="tiny">言葉は出来事（台風・ハロウィン・新製品など）で入れかわります。出てすぐの言葉は、書く人がまだ少ない言葉です。</p></section>
+  </div>
+  <section class="panel">
+    <div class="head"><h2>棚の言葉の一覧</h2><span class="tiny">${rows.length}語。見出しで並べ替え</span></div>
+    <div class="toolbar">
+      <label class="inline">回<select id="wordRun"><option value="now" ${run === 'now' ? 'selected' : ''}>カテゴリごとのいちばん新しい回</option>${wordRuns.map(r => `<option value="${esc(r)}" ${run === r ? 'selected' : ''}>${md(r)}</option>`).join('')}</select></label>
+      <input type="search" id="wordQ" placeholder="言葉・カテゴリで探す" value="${esc(S.f.wordQ)}" style="max-width:220px" aria-label="言葉を探す">
+      <label class="inline">記事<select id="wordMin">${[1, 3, 5].map(n => `<option value="${n}" ${S.f.wordMin == n ? 'selected' : ''}>${n}本以上</option>`).join('')}</select></label>
+    </div>
+    <div class="scroll tbox"><table><thead>${thead('words', cols)}</thead><tbody>${tbody(rows, cols, base.filter(w => w.n >= 3), null)}</tbody></table></div>
+    <p class="tiny">言葉の狙い目 = 入りやすさ（スキ中央値が少ない・24時間以内が多い）×0.7 ＋ 伸びしろ（いちばん多いスキが多い）×0.3。回ごとに、その回の言葉どうしで比べています。</p>
+  </section>`;
+}
+
+// ---------- 画面：タグ ----------
+const SRC = { series: '定時観測', scan: 'タグ探し' };
+function tagCols() {
+  const n = S.D.D.tags.rank_of.total;
+  return [
+    { k: 'rank', label: '順位', cls: 'n', first: 'asc', val: t => t.ranks.total, cell: t => `<span class="rank r${t.ranks.total}"><b>${t.ranks.total}</b><span>/${n}</span></span>` },
+    { k: 'tag', label: 'タグ', cls: 'nm', first: 'asc', val: t => t.tag, cell: t => `<b>#${esc(t.tag)}</b><div class="tiny">${esc(SRC[t.source] || t.source)}・${t.page === 'hashtag' ? 'ハッシュタグ' : 'キーワード'}のページ</div>` },
+    { k: 'total', label: '狙い目', val: t => t.scores.total, cell: t => scoreBar(t.scores.total), tipf: t => `狙い目 ${fmt(t.scores.total)}（${n}中${t.ranks.total}位・上位${topPct(t.ranks.total, n)}%）` },
+    { k: 'entry', label: '入口', cls: 'n', dir: 1, heat: true, val: t => t.scores.entry, cell: t => fmt(t.scores.entry), tipf: t => `入口の低さ ${fmt(t.scores.entry)}\n人気20本のいちばん少ないスキ ${fmt(t.pop_low)}・少ない方4分の1 ${fmt(t.pop_q1)}` },
+    { k: 'turnover', label: '入れかわり', cls: 'n', dir: 1, heat: true, val: t => t.scores.turnover, cell: t => fmt(t.scores.turnover), tipf: t => `入れかわり ${fmt(t.scores.turnover)}\n人気20本の古さ ${days(t.pop_age_days)}` },
+    { k: 'competition', label: '競争の薄さ', cls: 'n', dir: 1, heat: true, val: t => t.scores.competition, cell: t => fmt(t.scores.competition), tipf: t => `競争の薄さ ${fmt(t.scores.competition)}\n1日の新着 ${fmt(t.new_per_day)}本${isNum(t.qualified) ? `・資格者 ${t.qualified}/20` : ''}` },
+    { k: 'reader', label: '読者', cls: 'n', dir: 1, heat: true, val: t => t.scores.reader, cell: t => fmt(t.scores.reader), tipf: t => `読者の厚み ${fmt(t.scores.reader)}\n人気1位のスキ ${fmt(t.pop_top1)}` },
+    { k: 'pop_low', label: '人気の最少スキ', cls: 'n', dir: -1, heat: true, val: t => t.pop_low, cell: t => fmt(t.pop_low, 1), title: FL.pop_low },
+    { k: 'pop_likes', label: '人気のスキ中央値', cls: 'n', val: t => t.pop_likes, cell: t => fmt(t.pop_likes, 1) + (t.flags.some(f => f.field === 'pop_likes') ? ' <span class="flag">◆</span>' : '') },
+    { k: 'pop_top1', label: '1位のスキ', cls: 'n', dir: 1, heat: true, val: t => t.pop_top1, cell: t => fmt(t.pop_top1, 1), title: FL.pop_top1 },
+    { k: 'pop_age_days', label: '人気の古さ', cls: 'n', dir: -1, heat: true, val: t => t.pop_age_days, cell: t => days(t.pop_age_days), title: FL.pop_age_days },
+    { k: 'new_per_day', label: '1日の新着', cls: 'n', dir: -1, heat: true, val: t => t.new_per_day, cell: t => fmt(t.new_per_day) + (t.flags.some(f => f.field === 'new_per_day') ? ' <span class="flag">◆</span>' : ''), title: FL.new_per_day },
+    { k: 'entry_rate', label: '新着→人気', cls: 'n', dir: 1, heat: true, val: t => t.entry_rate, cell: t => isNum(t.entry_rate) ? `${fmt(t.entry_rate, 1)}%<div class="tiny">${t.entry_n}本中</div>` : '—' },
+    { k: 'qualified', label: '資格者', cls: 'n', val: t => t.qualified, cell: t => isNum(t.qualified) ? `${fmt(t.qualified, 1)}/20` : '—' },
+    { k: 'tagtotal', label: '件数', cls: 'n', val: t => t.total || (t.sheet && t.sheet.total), cell: t => fmt(t.total || (t.sheet && t.sheet.total)) },
+    { k: 'runs', label: '回数', cls: 'n', val: t => t.runs, cell: t => `${fmt(t.runs)}<div class="tiny">${md(t.last_run).split(' ')[0]}まで</div>` },
+  ];
+}
+function viewTags() {
+  const all = S.D.tags; const vis = all.filter(t => S.f.tagSrc === 'all' || t.source === S.f.tagSrc);
+  const cols = tagCols(); const rows = sortRows(vis, 'tags', cols);
+  const sel = all.find(t => t.key === S.tag) || rows[0] || all[0];
+  if (sel) S.tag = sel.key;
+  return `
+  <section class="panel">
+    <div class="head"><h2>タグの地図</h2><span class="tiny">左下ほど、新着が少なく新しい記事が人気に入る棚（入りやすい）</span></div>
+    <div class="scroll">${tagMap(vis)}</div>
+    <div class="legend"><span><i class="dot" style="background:var(--hot)"></i>狙い目 65以上</span><span><i class="dot" style="background:var(--good)"></i>50〜64</span><span><i class="dot" style="background:var(--accent)"></i>40〜49</span><span><i class="dot" style="background:var(--dot-old)"></i>40未満</span><span>大きい点：定時観測</span><span>点線：タグの真ん中</span></div>
+  </section>
+  <section class="panel">
+    <div class="head"><h2>タグの順位</h2><span class="tiny">${vis.length}行。行を押すと下で詳しく見られます</span></div>
+    <div class="toolbar"><div class="seg" role="group" aria-label="出どころ">${[['all', 'すべて'], ['series', '定時観測'], ['scan', 'タグ探し']].map(([k, l]) => `<button type="button" data-tagsrc="${k}" aria-pressed="${S.f.tagSrc === k}">${l}</button>`).join('')}</div><span class="tiny">定時観測は10/21から1日2回（最初の2日は1時間おき）。タグ探しは10/25の1回で、測り方が違います。</span></div>
+    <div class="scroll tbox"><table><thead>${thead('tags', cols)}</thead><tbody>${tbody(rows, cols, all, t => `class="pick${S.tag === t.key ? ' sel' : ''}" data-tag="${esc(t.key)}" tabindex="0"`)}</tbody></table></div>
+  </section>
+  ${sel ? tagDetail(sel) : ''}
+  ${baselinePanel(S.D.D.sheet && S.D.D.sheet.baseline)}
+  <div class="grid2">
+    <section class="panel"><h2>新着から人気に入った割合</h2><p class="small muted">新着で見かけた記事のうち、どこかの回で人気にも出た割合（公開から12時間以上追えた記事、観測10回以上のタグ）。</p>${entryBars()}</section>
+    <section class="panel"><h2>タグの棚の性格</h2><p class="small muted">人気の上位20本が公開から何日たった記事か（中央値、対数）。左ほど新しい記事が入れかわる棚。</p><div class="scroll">${shelfDots()}</div></section>
+  </div>`;
+}
+function baselinePanel(B) {
+  if (!B || !B.items || !B.items.length) return '';
+  const ok = B.items.filter(x => x.read), ng = B.items.filter(x => !x.read), sus = B.items.filter(x => x.suspect);
+  const rows = ok.slice().sort((a, b) => (b.total || 0) - (a.total || 0));
+  return `<section class="panel">
+    <div class="head"><h2>ジャンルをまたいだ基準：${B.items.length}タグを同じ時刻に見た回</h2><span class="tiny">${md(B.run)}・読めたタグ ${ok.length}／${B.items.length}</span></div>
+    <p class="small muted">自分の分野のタグの数字が、noteの中で多いのか少ないのかを見るための物差しです。</p>
+    <div class="scroll"><table><thead><tr><th>タグ</th><th>大分類</th><th>カテゴリ（パンくず）</th><th class="n">件数</th><th class="n">人気のスキ</th><th class="n">人気の古さ</th><th class="n">新着の幅</th></tr></thead><tbody>${rows.map(x => `<tr><td class="nm">#${esc(x.tag)}${x.suspect ? ' <span class="chip mid" title="新着の一覧が人気の一覧と同じ記事で終わっていました">疑い</span>' : ''}</td><td class="small">${esc(x.group || '—')}</td><td class="small">${esc(x.category || '—')}</td><td class="n">${fmt(x.total)}</td><td class="n">${isNum(x.likes_med) ? fmt(x.likes_med, 1) : '—'}</td><td class="n">${isNum(x.age_med_h) ? hrs(x.age_med_h) : '—'}</td><td class="n">${isNum(x.new_window_h) ? hrs(x.new_window_h) : '—'}</td></tr>`).join('')}</tbody></table></div>
+    ${ng.length ? `<p class="small"><b>読めず（${ng.length}タグ）</b>：${ng.map(x => '#' + esc(x.tag)).join('・')}。ページは開けましたが、記事を読み取れませんでした。数字がないのは、記事がないからではありません。</p>` : ''}
+    ${sus.length ? `<p class="small"><b>疑い（${sus.length}タグ）</b>：${sus.map(x => '#' + esc(x.tag)).join('・')}。新着の一覧が人気の一覧と同じ記事で終わっていたため、新着の幅は確かではありません。</p>` : ''}
+    <p class="tiny">${esc(B.note)}。</p>
+  </section>`;
+}
+function tagMap(list) {
+  const pts = list.filter(t => isNum(t.new_per_day) && t.new_per_day > 0 && isNum(t.pop_age_days) && t.pop_age_days > 0);
+  const W = 760, H = 440, L = 70, R = 24, T = 20, B = 52;
+  const xlo = 0.5, xhi = 3000, ylo = 6, yhi = 24 * 400;
+  const X = v => logx(v, xlo, xhi, L, W - R), Y = h => H - B - (Math.log10(h) - Math.log10(ylo)) / (Math.log10(yhi) - Math.log10(ylo)) * (H - T - B);
+  const mx = median(pts.map(t => t.new_per_day)), my = median(pts.map(t => t.pop_age_days * 24));
+  let o = svgOpen(W, H, 'タグごとの、1日の新着と人気の古さ', 560);
+  if (isNum(mx) && isNum(my)) o += `<rect class="zone" x="${L}" y="${Y(my)}" width="${X(mx) - L}" height="${H - B - Y(my)}"/>`;
+  [1, 3, 10, 30, 100, 300, 1000, 3000].forEach(v => { o += `<line class="grid" x1="${X(v)}" x2="${X(v)}" y1="${T}" y2="${H - B}"/><text class="lbl" x="${X(v)}" y="${H - B + 16}" text-anchor="middle">${fmt(v)}</text>`; });
+  [[6, '6時間'], [24, '1日'], [72, '3日'], [24 * 7, '1週間'], [24 * 30, '1か月'], [24 * 180, '半年']].forEach(([v, l]) => { o += `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="lbl" x="${L - 8}" y="${Y(v) + 4}" text-anchor="end">${l}</text>`; });
+  if (isNum(mx) && isNum(my)) o += `<line class="med" x1="${X(mx)}" x2="${X(mx)}" y1="${T}" y2="${H - B}"/><line class="med" x1="${L}" x2="${W - R}" y1="${Y(my)}" y2="${Y(my)}"/>`;
+  o += `<text class="lbl" x="${(L + W - R) / 2}" y="${H - 14}" text-anchor="middle">1日の新着（本、対数）</text><text class="lbl" transform="translate(16 ${(T + H - B) / 2}) rotate(-90)" text-anchor="middle">人気の上位20本の古さ（中央値）</text>`;
+  const col = t => { const v = t.scores.total; return v >= 65 ? 'var(--hot)' : v >= 50 ? 'var(--good)' : v >= 40 ? 'var(--accent)' : 'var(--dot-old)'; };
+  const labels = placeLabels(pts.map(t => ({ t, x: X(t.new_per_day), y: Y(t.pop_age_days * 24), text: '#' + t.tag + (t.source === 'scan' ? '' : ''), size: 12, prio: t.scores.total })), { l: L, r: W - 2, t: 2, b: H - B });
+  pts.forEach(t => { o += `<g class="pt" data-tag="${esc(t.key)}" data-tip="${esc(`#${t.tag}（${SRC[t.source]}）\n狙い目 ${fmt(t.scores.total)}（${t.ranks.total}位）\n1日の新着 ${fmt(t.new_per_day)}本・人気の古さ ${days(t.pop_age_days)}\n人気の最少スキ ${fmt(t.pop_low, 1)}・1位 ${fmt(t.pop_top1, 1)}`)}" tabindex="0"><circle cx="${X(t.new_per_day)}" cy="${Y(t.pop_age_days * 24)}" r="${t.source === 'series' ? 8 : 6}" fill="${col(t)}" fill-opacity=".9" stroke="var(--panel)" stroke-width="1.5"/></g>`; });
+  labels.forEach(l => { o += `<text x="${l.lx}" y="${l.ly}" font-size="${l.size}" text-anchor="${l.anchor}" style="pointer-events:none${l.t.source === 'series' ? ';font-weight:600' : ''}">${esc(l.text)}</text>`; });
+  return o + '</svg>';
+}
+function tagDetail(t) {
+  const all = S.D.tags; const v = verdictOf(t.scores.total); const n = S.D.D.tags.rank_of.total;
+  const pos = (f, d) => { const p = pctRank(all.map(x => x[f]), t[f]); return p == null ? null : d < 0 ? 100 - p : p; };
+  const tr = S.D.trendBy[t.tag] || [];
+  const e = S.D.entryBy[t.tag];
+  const sh = t.sheet;
+  const opts = all.map(x => `<option value="${esc(x.key)}" ${x.key === t.key ? 'selected' : ''}>#${esc(x.tag)}（${SRC[x.source]}）</option>`).join('');
+  const card = (k, val, extra) => `<div class="card" style="gap:6px"><span class="tiny" style="letter-spacing:.04em">${k}</span><span style="font-family:var(--f-display);font-size:22px;font-weight:700">${val}</span>${extra || ''}</div>`;
+  const rel = (p, name) => isNum(p) ? `<div class="row small" style="gap:6px">${meter(p)}<span>${name}：<b>${lv(p)}</b></span></div>` : '';
+  const words = sh && sh.words && sh.words.length ? `<div class="wbars">${sh.words.slice().sort((a, b) => a.count - b.count).map(w => `<div class="wbar"><span style="overflow-wrap:anywhere">${esc(w.word)}</span><span class="bar"><i style="width:${clamp(Math.log10(w.count + 1) / Math.log10(100001) * 100, 2, 100)}%"></i></span><span class="num small">${fmt(w.count)}件${isNum(w.per_day) && w.per_day > 0 ? `<span class="tiny"> +${fmt(w.per_day, 1)}/日</span>` : ''}</span></div>`).join('')}</div><p class="tiny">${esc(S.D.D.sheet.note)}（${md(S.D.D.sheet.to)}時点）</p>` : '<p class="small muted">このタグの小カテ（関連キーワード）は、まだ記録がありません。</p>';
+  return `<section class="panel hi" id="tagDetail">
+    <div class="head"><div class="row"><h2>#${esc(t.tag)} の診断</h2><span class="chip ${v.cls}">${v.text} ${fmt(t.scores.total)}</span>${rankChip(t.ranks.total, n, '狙い目')}</div><label class="inline">タグ<select id="tagSel">${opts}</select></label></div>
+    <div class="axes" style="max-width:520px">${['entry', 'turnover', 'competition', 'reader'].map(a => `<div class="axis"><span>${AX[a]}</span><span class="bar"><i style="width:${clamp(t.scores[a] || 0, 0, 100)}%"></i></span><span class="num small">${fmt(t.scores[a])}<span class="tiny"> ${isNum(t.ranks[a]) ? t.ranks[a] + '位' : ''}</span></span></div>`).join('')}</div>
+    <div class="cards">
+      ${card('棚の種類', t.page === 'hashtag' ? 'ハッシュタグの棚' : 'AIが選ぶ棚', `<span class="small muted">${t.page === 'hashtag' ? 'ハッシュタグを付けた記事が並ぶ棚です。' : 'キーワードのページ。本文がこの言葉の問いに答えている記事が並びます（付けただけでは載らない：仮説H01）。'}</span>${sh && sh.category ? `<span class="tiny">タグのページの分類：${esc(sh.category)}</span>` : ''}`)}
+      ${card('人気の上位20本の古さ', days(t.pop_age_days), rel(pos('pop_age_days', 1), '古さ') + `<span class="small muted">${t.pop_age_days < 3 ? '今日の記事にも人気の席がある棚' : t.pop_age_days > 30 ? '古い記事が上位に残り続ける棚。1本を書き足して育てる' : '新旧が混ざる棚'}</span>` + sparkSvg(tr.map(r => ({ v: r.pop_age_days })), x => days(x)))}
+      ${card('1日の新着（目安）', fmt(t.new_per_day) + '<small style="font-size:13px">本</small>', rel(pos('new_per_day', 1), '多さ') + `<span class="small muted">新着の40本目が${hrs(t.new_depth_h)}前。${t.new_depth_h >= 24 ? '出した記事が新着に長く残ります。' : t.new_depth_h < 6 ? '数時間で新着から流れます。' : '半日ほどで流れます。'}</span>`)}
+      ${card('人気に並ぶ記事のスキ', fmt(t.pop_likes, 1), rel(pos('pop_likes', 1), 'スキ') + `<span class="small muted">いちばん少ない ${fmt(t.pop_low, 1)}・少ない方4分の1 ${fmt(t.pop_q1, 1)}・1位 ${fmt(t.pop_top1, 1)}（最近6回の中央値）。人気の順はスキの順ではありません（仮説H02）。</span>` + sparkSvg(tr.map(r => ({ v: r.pop_likes })), x => fmt(x, 1)))}
+      ${card('新着から人気に入った割合', e ? `${fmt(e.rate, 1)}<small style="font-size:13px">%</small>` : '—', e ? `<span class="small muted">${e.n}本中${e.entered}本。入った記事の多くは、新着に出た最初の更新で人気にも出ています（${e.same_update}本）。公開から人気に出るまで中央値${hrs(e.lag_h)}。</span>` : '<span class="small muted">定時観測で10回以上見たタグだけ出します。</span>')}
+      ${card('件数', fmt(t.total || (sh && sh.total)), sh && isNum(sh.total_per_day) ? `<span class="small muted">1日に約 +${fmt(sh.total_per_day)} 件（${md(S.D.D.sheet.from).split(' ')[0]}〜${md(S.D.D.sheet.to).split(' ')[0]}）</span>` : '<span class="small muted">タグのページに出ている記事の件数。</span>')}
+    </div>
+    <div class="grid2">
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0"><div class="head"><h3>回ごとの移り変わり</h3><div class="seg" role="group" aria-label="指標"><button type="button" data-trend="pop_age_days" aria-pressed="${S.f.trendKey === 'pop_age_days'}">人気の古さ</button><button type="button" data-trend="pop_likes" aria-pressed="${S.f.trendKey === 'pop_likes'}">人気のスキ</button></div></div>${tr.length ? `<div class="scroll">${trendSvg(tr, S.f.trendKey)}</div>` : '<p class="small muted">定時観測のタグだけ、回ごとの移り変わりが出ます。</p>'}</div>
+      <div style="display:flex;flex-direction:column;gap:8px;min-width:0"><h3>このタグの小カテ（関連キーワード）</h3>${words}</div>
+    </div>
+  </section>`;
+}
+function trendSvg(tr, key) {
+  const pts = tr.filter(r => isNum(r[key]));
+  if (pts.length < 2) return '<p class="small muted">2回分の観測から出ます。</p>';
+  const W = 520, H = 220, L = 44, R = 14, T = 12, B = 30;
+  const ts = pts.map(r => new Date(r.run_at.replace(' ', 'T') + ':00+09:00').getTime());
+  const t0 = Math.min(...ts), t1 = Math.max(...ts); const vmax = Math.max(...pts.map(r => r[key])) * 1.1 || 1;
+  const X = t => L + (t - t0) / ((t1 - t0) || 1) * (W - L - R), Y = v => H - B - v / vmax * (H - T - B);
+  let o = svgOpen(W, H, '回ごとの移り変わり', 320);
+  [0, vmax / 2, vmax].forEach(v => { o += `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="lbl" x="${L - 5}" y="${Y(v) + 4}" text-anchor="end">${key === 'pop_age_days' ? fmt(v, 1) + '日' : fmt(v)}</text>`; });
+  const dayTicks = []; for (let t = new Date(t0); t.getTime() <= t1; t = new Date(t.getTime() + 86400000 * 2)) dayTicks.push(t.getTime());
+  dayTicks.forEach(t => { const d = new Date(t); o += `<text class="lbl" x="${X(t)}" y="${H - 10}" text-anchor="middle">${d.getMonth() + 1}/${d.getDate()}</text>`; });
+  const dpath = pts.map((r, i) => (i ? 'L' : 'M') + X(ts[i]).toFixed(1) + ' ' + Y(r[key]).toFixed(1)).join(' ');
+  o += `<path d="${dpath}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>`;
+  pts.forEach((r, i) => { o += `<circle cx="${X(ts[i]).toFixed(1)}" cy="${Y(r[key]).toFixed(1)}" r="${i === pts.length - 1 ? 4.5 : 2.6}" fill="var(--accent)" data-tip="${esc(`${md(r.run_at)}\n人気の古さ ${days(r.pop_age_days)}\n人気のスキ ${fmt(r.pop_likes, 1)}`)}"/>`; });
+  return o + '</svg>';
+}
+function entryBars() {
+  const rows = (S.D.D.entries || []).filter(e => isNum(e.rate)).slice().sort((a, b) => b.rate - a.rate);
+  if (!rows.length) return '<p class="empty">まだありません。</p>';
+  const W = 460, rowH = 30, L = 100, R = 110, H = rows.length * rowH + 24;
+  const X = v => L + v / 100 * (W - L - R);
+  let o = svgOpen(W, H, '新着から人気に入った割合', 320);
+  [0, 25, 50, 75, 100].forEach(v => { o += `<line class="grid" x1="${X(v)}" x2="${X(v)}" y1="0" y2="${H - 20}"/><text class="lbl" x="${X(v)}" y="${H - 6}" text-anchor="middle">${v}%</text>`; });
+  rows.forEach((e, i) => { const y = i * rowH + rowH / 2; o += `<g data-tip="${esc(`#${e.tag}\n人気に入った ${e.entered}本／${e.n}本\n新着に出た最初の更新で人気にも ${e.same_update}本\n公開から人気まで 中央値${hrs(e.lag_h)}`)}"><rect x="0" y="${y - rowH / 2}" width="${W}" height="${rowH}" fill="transparent"/><text x="${L - 8}" y="${y + 4}" text-anchor="end" font-size="12">#${esc(e.tag)}</text><rect x="${L}" y="${y - 8}" width="${Math.max(2, X(e.rate) - L)}" height="16" rx="4" fill="var(--accent)"/><text x="${X(e.rate) + 6}" y="${y + 4}" font-size="12" class="num">${fmt(e.rate, 1)}%（${e.entered}/${e.n}）</text></g>`; });
+  return `<div class="scroll">${o}</svg></div>`;
+}
+function shelfDots() {
+  const by = new Map(); S.D.tags.forEach(t => { if (!isNum(t.pop_age_days)) return; const had = by.get(t.tag); if (!had || t.source === 'scan') by.set(t.tag, t); });
+  const rows = [...by.values()].sort((a, b) => a.pop_age_days - b.pop_age_days);
+  const W = 460, rowH = 22, L = 112, R = 56, T = 22, H = T + rows.length * rowH + 26;
+  const X = v => logx(v, 0.1, 1000, L, W - R);
+  let o = svgOpen(W, H, '人気の古さ', 320);
+  [0.1, 1, 10, 100, 1000].forEach(v => { o += `<line class="grid" x1="${X(v)}" x2="${X(v)}" y1="${T - 6}" y2="${H - 22}"/><text class="lbl" x="${X(v)}" y="${H - 6}" text-anchor="middle">${v}日</text>`; });
+  o += `<text class="lbl" x="${L}" y="12">← 新しい記事が並ぶ</text><text class="lbl" x="${W - R}" y="12" text-anchor="end">古い記事が居座る →</text>`;
+  rows.forEach((t, i) => { const y = T + i * rowH + rowH / 2; o += `<g class="pt" data-tag="${esc(t.key)}" data-tip="${esc(`#${t.tag}\n人気の古さ ${days(t.pop_age_days)}\n人気のスキ中央値 ${fmt(t.pop_likes, 1)}\n1日の新着 ${fmt(t.new_per_day)}本`)}"><rect x="0" y="${y - rowH / 2}" width="${W}" height="${rowH}" fill="transparent"/><text x="${L - 8}" y="${y + 4}" text-anchor="end" font-size="12">#${esc(t.tag)}</text><line x1="${L}" x2="${X(t.pop_age_days)}" y1="${y}" y2="${y}" class="grid"/><circle cx="${X(t.pop_age_days)}" cy="${y}" r="5" fill="var(--accent)"/><text x="${W - R + 6}" y="${y + 4}" font-size="12" class="num">${fmt(t.pop_age_days, 1)}日</text></g>`; });
+  return o + '</svg>';
+}
+
+// ---------- 画面：出す時刻 ----------
+function viewTiming() {
+  const C = S.D.C; const sup = C.supply; const snaps = C.snapshots || [];
+  const both = []; if (snaps.length) for (let h = 0; h < 24; h++) { if (snaps.every(s => isNum(s.ratio[h]) && s.ratio[h] >= 1)) both.push(h); }
+  const bands = []; both.forEach(h => { const b = bands[bands.length - 1]; if (b && b[1] === h - 1) b[1] = h; else bands.push([h, h]); });
+  const bandTxt = bands.map(([a, b]) => a === b ? `${a}時台` : `${a}〜${b}時台`).join('・');
+  const lines = snaps.map(s => `${hhmm(s.run)}の棚（${s.categories}カテゴリ）にいた新しい記事は、公開から${s.youngest_h}時間以上のものから`).join('。');
+  const R = (S.D.D.rhythm || {}).hours || [];
+  return `
+  <section class="panel hi">
+    <h2>いつ出すと、棚に並びやすいか</h2>
+    <div class="guide">
+      <div><b>どの回でも多かった時台</b>　${bandTxt || '—'}に出た記事が、記事の出ている量より多く棚に並んでいました（下の「棚での多さ」が1以上の所）。</div>
+      <div><b>棚に出てくるまで</b>　${lines}。公開してすぐは並ばず、noteの更新（約3時間おき：12・15・18・21・0〜1・3・6時台。仮説H07）を待って入ると見ています。</div>
+      ${notYet(snaps)}
+      <div class="tiny">2回の観測から出した目安です。毎日の棚の観測を続けて確かめます。「更新の約2.5時間前に出すと有利」（仮説H13）はまだ確かめていません。</div>
+    </div>
+  </section>
+  <section class="panel">
+    <div class="head"><h2>公開した時台ごとの、棚での多さ</h2><span class="tiny">1より大きいほど、その時台に出た記事が棚に多い（＝出ている量の割に並びやすい）</span></div>
+    <div class="scroll">${ratioSvg(snaps)}</div>
+    <h3>記事が出ている時台（新着のページから）</h3>
+    <div class="scroll">${hourBars(sup ? sup.hours : new Array(24).fill(0), null)}</div>
+    <p class="tiny">${sup ? `新着を1日以上さかのぼれるタグ（${sup.tags.map(t => '#' + esc(t)).join('・')}）の、${md(sup.from)}〜${md(sup.to)}に出た${fmt(sup.articles)}本。新着の多いタグは観測した時刻の直前しか見えないので使っていません。` : ''}</p>
+  </section>
+  <div class="grid2">
+    <section class="panel"><h2>棚にいた記事は、公開から何時間か</h2>${snaps.map(s => `<div><div class="small"><b>${md(s.run)}</b>（${s.categories}カテゴリ・${fmt(s.articles)}本）</div>${ageBars(s.age_hours)}</div>`).join('')}<p class="tiny">右端は24時間以上（「1日前」以前）の記事。</p></section>
+    <section class="panel"><h2>タグのページが更新される時刻</h2><p class="small muted">1時間おきに見ていた期間に、前の回から新着の上位10本の顔ぶれが変わった割合（${((S.D.D.rhythm || {}).tags || []).map(t => '#' + esc(t)).join('・')}）。組の少ない時刻は0%か100%になりやすいです。</p>${rhythmBars(R)}</section>
+  </div>`;
+}
+function notYet(snaps) {
+  // 回の直前6時間に出た記事のうち、まだ棚にいなかった時台（記事は出ているのに棚での多さが0）
+  const parts = snaps.map(s => {
+    const rh = +hhmm(s.run).split(':')[0]; const hs = [];
+    for (let k = 6; k >= 0; k--) { const h = (rh - k + 24) % 24; if (s.ratio[h] === 0) hs.push(h); }
+    if (!hs.length) return '';
+    return `${hhmm(s.run)}の棚には、${hs[0]}〜${hs[hs.length - 1]}時台に出た記事がまだ並んでいませんでした`;
+  }).filter(Boolean);
+  return parts.length ? `<div><b>出してすぐは並ばない</b>　${parts.join('。')}。朝6時の更新の次は12時台なので、朝に出すなら昼の更新から勝負になると見ています。</div>` : '';
+}
+function ratioSvg(snaps) {
+  if (!snaps.length) return '<p class="empty">5カテゴリ以上を同じ時刻に見た回がまだありません。</p>';
+  const W = 760, L = 120, R = 10, T = 22, rowH = 34, H = T + snaps.length * rowH + 26; const cw = (W - L - R) / 24;
+  let o = svgOpen(W, H, '公開した時台ごとの棚での多さ', 560);
+  for (let h = 0; h < 24; h += 3) o += `<text class="lbl" x="${L + h * cw + cw / 2}" y="14" text-anchor="middle">${h}時</text>`;
+  snaps.forEach((s, i) => {
+    const y = T + i * rowH;
+    o += `<text x="${L - 8}" y="${y + rowH / 2 + 4}" text-anchor="end" font-size="12">${md(s.run)}の棚</text>`;
+    s.ratio.forEach((r, h) => {
+      const x = L + h * cw; let fill = 'var(--chart-grid)', op = 1, txt = '';
+      if (isNum(r)) { if (r >= 1) { fill = 'var(--good)'; op = clamp(0.25 + (r - 1) / 1.5, 0.25, 1); } else { fill = 'var(--bad)'; op = clamp(0.15 + (1 - r) * 0.6, 0.15, 0.75); } txt = fmt(r, 1); }
+      o += `<g data-tip="${esc(`${h}時台に公開した記事\n${isNum(r) ? `棚での多さ ${fmt(r, 2)}（棚の新しい記事のうち${s.pub_hours[h]}本）` : 'この時台は記事が少なく、出していません'}`)}"><rect x="${x + 1}" y="${y + 2}" width="${cw - 2}" height="${rowH - 6}" rx="3" fill="${fill}" fill-opacity="${op}"/>${txt ? `<text x="${x + cw / 2}" y="${y + rowH / 2 + 3}" text-anchor="middle" font-size="10" class="num">${txt}</text>` : ''}</g>`;
+    });
+  });
+  o += `<text class="lbl" x="${L}" y="${H - 6}">公開した時台 →（灰色：記事が少なく出していない時台）</text>`;
+  return o + '</svg>';
+}
+function ageBars(arr) {
+  const W = 420, H = 110, L = 26, R = 6, T = 8, B = 22; const mx = Math.max(1, ...arr.slice(0, 24)); const bw = (W - L - R) / 25;
+  let o = svgOpen(W, H, '公開からの時間', 300);
+  arr.forEach((v, h) => { const vv = Math.min(v, mx * 1.15); const bh = vv / (mx * 1.15) * (H - T - B); o += `<rect x="${L + h * bw + 1.5}" y="${H - B - bh}" width="${bw - 3}" height="${bh}" rx="2" fill="${h === 24 ? 'var(--dot-old)' : 'var(--accent)'}" data-tip="${esc(h === 24 ? `24時間以上\n${v}本` : `公開から${h}〜${h + 1}時間\n${v}本`)}"/>`; });
+  [0, 6, 12, 18].forEach(h => { o += `<text class="lbl" x="${L + h * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${h}時間</text>`; });
+  o += `<text class="lbl" x="${L + 24 * bw + bw / 2}" y="${H - 6}" text-anchor="middle">24+</text>`;
+  return `<div class="scroll">${o}</svg></div>`;
+}
+function rhythmBars(R) {
+  if (!R.length) return '<p class="empty">まだありません。</p>';
+  const W = 420, H = 180, L = 36, Rr = 6, T = 10, B = 24; const bw = (W - L - Rr) / 24;
+  let o = svgOpen(W, H, '時台ごとの更新', 300);
+  [0, .5, 1].forEach(v => { const y = H - B - v * (H - T - B); o += `<line class="grid" x1="${L}" x2="${W - Rr}" y1="${y}" y2="${y}"/><text class="lbl" x="${L - 4}" y="${y + 4}" text-anchor="end">${v * 100}%</text>`; });
+  R.forEach(b => { const sh = b.pairs ? b.changed / b.pairs : null; const bh = isNum(sh) ? Math.max(2, sh * (H - T - B)) : 0; o += `<rect x="${L + b.hour * bw + 2}" y="${H - B - bh}" width="${bw - 4}" height="${bh}" rx="2" fill="${sh > 0 ? 'var(--accent)' : 'var(--chart-grid)'}" data-tip="${esc(`${b.hour}時台\n${b.pairs ? `変わった ${b.changed}組／${b.pairs}組` : 'この時刻の組はありません'}`)}"/>`; });
+  [0, 3, 6, 9, 12, 15, 18, 21].forEach(h => { o += `<text class="lbl" x="${L + h * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${h}時</text>`; });
+  return `<div class="scroll">${o}</svg></div>`;
+}
+
+// ---------- 画面：記事を調べる ----------
+const catOptions = (sel) => {
+  const list = S.D.cats.filter(c => !c.same_as).slice().sort((a, b) => (a.ranks.total ?? 99) - (b.ranks.total ?? 99));
+  return list.map(c => `<option value="${esc(c.path)}" ${c.path === sel ? 'selected' : ''}>${esc(c.label)}${isNum(c.ranks.total) ? `（${c.ranks.total}位）` : ''}</option>`).join('');
+};
+function viewCheck() {
+  const f = S.f.calc; const d = S.f.draft;
+  const defCat = f.cat || (S.D.cats.find(c => c.ranks.total === 1) || S.D.cats[0]).path;
+  return `
+  <section class="panel">
+    <div class="head"><h2>記事がどこに出たかを調べる</h2><span class="tiny">記事のURLを入れると、観測した面（タグの人気・新着、カテゴリの棚）に出たかを探します</span></div>
+    <form id="lookForm" class="row" onsubmit="return false"><input type="url" id="lookUrl" placeholder="https://note.com/…/n/n0123456789ab" value="${esc(S.f.look || exampleUrl())}" style="flex:1;min-width:220px" aria-label="記事のURL"><button class="btn primary" type="submit" id="lookGo">調べる</button></form>
+    <div id="lookOut"></div>${S.f.look ? '' : '<p class="tiny">例として、自分の記事（O01）のURLを入れてあります。</p>'}
+    <p class="tiny">URLはこのページの中で記事番号を暗号の形（ハッシュ）に直して、照合表と比べるだけです。どこにも送りません。照合表には、ほかの書き手の名前やURLは入っていません。11/1朝のカテゴリ一巡は記事番号を取っていないので、照合の対象外です。</p>
+  </section>
+  <section class="panel">
+    <div class="head"><h2>いまのスキで、棚に届くか</h2><span class="tiny">公開した記事のスキと時間を入れると、そのカテゴリの棚の記事と比べます</span></div>
+    <form class="form" id="calcForm" onsubmit="return false">
+      <label>出したカテゴリ<select id="calcCat">${catOptions(defCat)}</select></label>
+      <label>いまのスキ<input type="number" id="calcLikes" min="0" step="1" value="${esc(f.likes ?? 6)}" inputmode="numeric"></label>
+      <label>公開からの時間（時間）<input type="number" id="calcHours" min="0" step="0.5" value="${esc(f.hours ?? 5)}" inputmode="decimal"></label>
+    </form>
+    <div id="calcOut">${calcOut(defCat, num(f.likes ?? 6), num(f.hours ?? 5))}</div>
+  </section>
+  <section class="panel">
+    <div class="head"><h2>出す前の点検</h2><span class="tiny">観測で分かった関門の合図に沿って点検します。このページの中だけで動き、どこにも送りません</span></div>
+    <form class="form" id="draftForm" onsubmit="return false">
+      <label>狙うカテゴリ<select id="dCat">${catOptions(d.cat || defCat)}</select></label>
+      <label>狙うタグ（任意）<select id="dTag"><option value="">（使わない）</option>${[...new Set(S.D.tags.map(t => t.tag).concat((S.D.D.sheet ? S.D.D.sheet.tags : []).map(t => t.tag)))].map(t => `<option value="${esc(t)}" ${d.tag === t ? 'selected' : ''}>#${esc(t)}</option>`).join('')}</select></label>
+      <label>公開する時刻<input type="time" id="dTime" value="${esc(d.time || '16:00')}"></label>
+      <label class="wide">タイトル<input type="text" id="dTitle" value="${esc(d.title || '')}" placeholder="例：事業承継の相談先は、まず商工会議所の窓口で決まる"></label>
+      <label class="wide">書き出し（あいさつの次の2〜3文）<textarea id="dLead" placeholder="例：事業承継の相談は、最初に商工会議所の窓口へ行くと、税理士探しまで一度に進みます。">${esc(d.lead || '')}</textarea></label>
+      <label class="wide">ハッシュタグ（空白で区切る）<input type="text" id="dTags" value="${esc(d.tags || '')}" placeholder="#事業承継 #中小企業 #経営"></label>
+    </form>
+    <ul class="checks" id="draftOut">${draftItems()}</ul>
+  </section>
+  ${scorePanel()}`;
+}
+const num = (v) => { if (v === null || v === undefined || v === '') return null; const n = parseFloat(String(v).replace(/,/g, '')); return Number.isFinite(n) ? n : null; };
+function calcOut(path, likes, hours) {
+  const c = S.D.byPath[path]; if (!c) return '';
+  const s = c.cur; if (!isNum(likes)) return '<p class="empty">スキの数を入れてください。</p>';
+  const all = s.dist.map(d => d[0]); const fresh = s.dist.filter(d => isNum(d[1]) && d[1] < 24);
+  const pAll = pctRank(all, likes), pFresh = pctRank(fresh.map(d => d[0]), likes);
+  const sp = isNum(hours) ? likes / Math.max(hours, 1) : null;
+  const pSp = isNum(sp) ? pctRank(fresh.map(d => d[0] / Math.max(d[1], 1)), sp) : null;
+  let v;
+  if (!fresh.length) v = { cls: 'mid', big: '比べる新しい記事がありません', txt: 'この棚には24時間以内の記事がほとんどなく、古い記事が残る棚です。' };
+  else if (likes >= (s.fresh_likes_med ?? Infinity)) v = { cls: 'good', big: '棚の新しい記事の真ん中より上', txt: `24時間以内の記事の中央値は${fmt(s.fresh_likes_med)}スキ。あなたの${fmt(likes)}スキは下から${fmt(pFresh)}%の位置です。` };
+  else if (likes >= (s.fresh_likes_min ?? Infinity)) v = { cls: 'mid', big: '棚に並んでいる新しい記事と同じくらい', txt: `24時間以内の記事は${fmt(s.fresh_likes_min)}〜${fmt(quant(fresh.map(d => d[0]), 1))}スキ（中央値${fmt(s.fresh_likes_med)}）。スキだけでは決まらないので、分類と言葉が合っているかを見てください。` };
+  else v = { cls: 'warn', big: '棚の新しい記事より少なめ', txt: `24時間以内の記事でいちばん少ないのは${fmt(s.fresh_likes_min)}スキ。棚は人気の順に近いので（仮説H33）、まずキーワードのページの新着に出ているかを確かめてください。` };
+  const late = isNum(hours) && hours >= 24 ? '<p class="tiny">公開から24時間を過ぎると、棚には古い記事として並びます。比べる相手は棚の記事全体になります。</p>' : '';
+  return `<div class="verdict ${v.cls}"><span class="big">${v.big}</span><span class="small">${v.txt}</span></div>
+    <div class="grid3">
+      <div class="card"><span class="tiny">棚の記事全体の中で</span><span class="num" style="font-size:20px">下から${fmt(pAll)}%</span>${meter(pAll)}<span class="tiny">${md(s.run)}の${esc(c.short)}の棚${s.n}本</span></div>
+      <div class="card"><span class="tiny">24時間以内の記事の中で</span><span class="num" style="font-size:20px">${isNum(pFresh) ? `下から${fmt(pFresh)}%` : '—'}</span>${meter(pFresh)}<span class="tiny">${fresh.length}本と比べて</span></div>
+      <div class="card"><span class="tiny">スキの集まる速さ</span><span class="num" style="font-size:20px">${isNum(sp) ? fmt(sp, 2) + '/時' : '—'}</span>${meter(pSp)}<span class="tiny">${isNum(pSp) ? `新しい記事の下から${fmt(pSp)}%（中央値 ${fmt(s.speed_med, 2)}/時）` : '時間を入れると出ます'}</span></div>
+    </div>${late}`;
+}
+function draftItems() {
+  const d = S.f.draft; const c = S.D.byPath[d.cat] || S.D.cats.find(x => x.ranks.total === 1);
+  const title = (d.title || '').trim(), lead = (d.lead || '').trim();
+  const tags = (d.tags || '').split(/[\s　]+/).map(t => t.replace(/^[#＃]/, '')).filter(Boolean);
+  const tag = d.tag || '';
+  const items = [];
+  const add = (st, head, body, ev) => items.push(`<li><span class="mark ${st}">${st === 'ok' ? '○' : st === 'ng' ? '×' : '？'}</span><div><b>${head}</b><div class="small muted">${body}</div>${ev ? `<div class="tiny">根拠：${ev}</div>` : ''}</div></li>`);
+  if (!title && !lead && !tags.length) return '<li><span class="mark q">？</span><div><b>タイトル・書き出し・ハッシュタグを入れると点検します</b><div class="small muted">狙うカテゴリと、使う言葉の候補は、上で選んだカテゴリの棚から出します。</div></div></li>';
+  const text = title + ' ' + lead + ' ' + tags.join(' ');
+  const ws = c ? c.cur.words : [];
+  const hitW = ws.filter(w => text.includes(w.word));
+  const inTitle = hitW.find(w => title.includes(w.word)), inLead = hitW.find(w => lead.includes(w.word));
+  const key = tag || (inTitle && inTitle.word) || (inLead && inLead.word) || (hitW[0] && hitW[0].word) || '';
+  if (key) {
+    const head30 = title.slice(0, 30);
+    add(title && head30.includes(key) ? 'ok' : 'ng', `タイトルの先頭30字に「${esc(key)}」があるか`, title ? (head30.includes(key) ? 'あります。' : '先頭30字にありません。意味を曲げずに入れられるか考えてください。') : 'タイトルが空です。', '#AI活用 ではタイトルに言葉がある記事の18%、ない記事の4.5%が新着に並んだ（10/21〜24、傾向）');
+    add(lead && lead.includes(key) ? 'ok' : 'q', `書き出しで「${esc(key)}」の問いに答えているか`, lead ? (lead.includes(key) ? '言葉はあります。最初の文が問いへの答えになっているかを読み直してください。' : '言葉がありません。最初の文で問いに答えると、AIが中身を読みやすくなると見ています。') : '書き出しが空です。', 'キーワードのページはAIが中身で選ぶ（note公式）。付けていない #業務改善・#AI活用 の新着に、書き出しで問いに答えた自分の記事が並んだ（O03、仮説H12・H32）');
+  }
+  if (c) {
+    add(hitW.length ? 'ok' : 'q', `${esc(c.short)}の棚の言葉を使っているか`, hitW.length ? hitW.map(w => `「${esc(w.word)}」（中央値${fmt(w.likes_med)}スキ）`).join('、') + ' を使っています。' : `使っていません。中身に合うなら：${topWords(c, 3).map(w => `「${esc(w.word)}」`).join('、')}`, `${md(c.cur.run)}の${esc(c.short)}の棚。言葉は日によって入れかわります`);
+    const aiWords = (text.match(/AI|ＡＩ|ChatGPT|Claude|Gemini|生成AI|プロンプト|LLM/g) || []).length;
+    if (/^business/.test(c.path) || c.big === 'ビジネス') add(aiWords >= 2 ? 'q' : 'ok', 'ビジネスに分類される中身か', aiWords >= 2 ? `AIの言葉が${aiWords}回出てきます。AIの使い方が主役だと、コンピュータ・IT＞AIに分類されてビジネスの棚に出ないことがあります。経営の困りごとを主役にしてください。` : '経営の困りごとが主役なら、ビジネスに分類されやすいと見ています。', '人気上位なのにビジネスの棚になかった13本のうち11本が、コンピュータ・IT・キャリア・科学・テクノロジー・デザインに分類されていた（11/1、仮説H33・H34）');
+    add('q', '有料にするか', `${esc(c.short)}の棚の記事の${pctTxt(c.paid_pct)}が有料${c.paid_pct >= 15 ? 'で、有料でも並んでいます' : c.paid_pct <= 3 ? 'で、有料はほとんど並んでいません' : ''}。`, 'note社は有料かどうかで表示を調整しないと説明（仮説H04）');
+  }
+  if (tag) {
+    const bs = S.D.D.body_scoring; let ev = '';
+    if (bs && bs.groups.listed && bs.groups.unlisted) { const L = bs.groups.listed, U = bs.groups.unlisted; const lh = Math.round(L.n * L.hashtag_has_tag / 100), uh = Math.round(U.n * U.hashtag_has_tag / 100); ev = `ハッシュタグに付けた記事は${lh + uh}本中${lh}本、付けていない記事は${L.n - lh + U.n - uh}本中${L.n - lh}本が新着に並んだ（${L.n + U.n}本、傾向）`; }
+    add(tags.includes(tag) ? 'ok' : 'ng', `ハッシュタグに #${esc(tag)} があるか`, tags.includes(tag) ? 'あります。' : 'ありません。付けただけでは載りませんが、付けた記事のほうが並んでいました。', ev);
+    const sh = S.D.D.sheet && S.D.D.sheet.tags.find(t => t.tag === tag);
+    if (sh && sh.words.length) { const hit = sh.words.filter(w => text.includes(w.word)); add(hit.length ? 'ok' : 'q', `#${esc(tag)} の小カテの言葉を使っているか`, hit.length ? hit.map(w => `${esc(w.word)}（${fmt(w.count)}件）`).join('、') + ' を使っています。' : '使っていません。中身に合うなら（件数の少ない順）：' + sh.words.slice().sort((a, b) => a.count - b.count).slice(0, 3).map(w => `${esc(w.word)}（${fmt(w.count)}件）`).join('、'), `#${esc(tag)} のページに出ている関連キーワード（${md(S.D.D.sheet.to)}）`); }
+  }
+  add(tags.length >= 3 && tags.length <= 5 ? 'ok' : 'q', 'ハッシュタグは3〜5個か', `今は${tags.length}個です。`, '以前の私のアカウントは1本に11〜17個付けて、キーワードのページに0本（1例）');
+  const tm = String(d.time || '').match(/^(\d{1,2}):(\d{2})/);
+  if (tm) {
+    const h = +tm[1] + +tm[2] / 60; const ups = [0, 3, 6, 12, 15, 18, 21, 24];
+    const next = ups.find(u => u > h) ?? 24; const wait = next - h;
+    const good = timingBands();
+    const inGood = good.includes(+tm[1]);
+    add(wait <= 3 && inGood ? 'ok' : 'q', '出す時刻', `次の更新は${next % 24}時台、約${fmt(wait, 1)}時間後。${inGood ? `${+tm[1]}時台は、棚に並びやすかった時台です。` : `棚に並びやすかったのは ${good.map(x => x + '時台').join('・') || '—'}。`}${+tm[1] >= 22 || +tm[1] < 9 ? '22時〜朝9時は避ける決まりです。' : ''}`, '新着・人気は約3時間おき（12・15・18・21・0〜1・3・6時台）にまとめて変わる（観測34回、仮説H07）。棚は「出す時刻」の面の2回の観測から');
+  }
+  return items.join('');
+}
+function exampleUrl() {
+  const a = (S.D.D.own || []).find(x => x.url_key && x.appearances.length) || (S.D.D.own || []).find(x => x.url_key);
+  return a ? `https://note.com/aitohal/n/${a.url_key}` : '';
+}
+function timingBands() {
+  const snaps = S.D.C.snapshots || []; const out = [];
+  if (snaps.length) for (let h = 0; h < 24; h++) if (snaps.every(s => isNum(s.ratio[h]) && s.ratio[h] >= 1)) out.push(h);
+  return out;
+}
+async function hashId(id) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(S.D.D.salt + ':' + id));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16);
+}
+async function runLook() {
+  const out = $('#lookOut'); if (!out) return;
+  const url = ($('#lookUrl').value || '').trim(); S.f.look = url;
+  const m = url.match(/\/n\/(n[0-9a-f]{12})/);
+  if (!m) { out.innerHTML = '<p class="empty">noteの記事のURL（…/n/n と12文字の英数字を含むもの）を入れてください。</p>'; return; }
+  let h;
+  try { h = await hashId(m[1]); } catch (e) { out.innerHTML = '<p class="empty">この画面では照合の計算ができませんでした。</p>'; return; }
+  const hits = (S.D.D.seen || {})[h] || [];
+  const own = S.D.D.own.find(a => a.url_key === m[1]);
+  const rows = hits.map(([sf, pi, best, first, last, times]) => ({ sf, place: S.D.D.places[pi], best, first, last, times })).sort((a, b) => (a.best ?? 999) - (b.best ?? 999));
+  const ownHtml = own ? `<p class="small"><b>自分の記事：</b>${esc(own.label)}（公開 ${md(own.published_at)}）。「自分の記事」の面に3つの関門の結果があります。</p>` : '';
+  if (!rows.length) { out.innerHTML = `${ownHtml}<div class="verdict warn"><span class="big">観測した面には出ていません</span><span class="small">観測しているのは、タグ${S.D.tags.length}行（${[...new Set(S.D.tags.map(t => '#' + t.tag))].slice(0, 8).join('・')}など）の人気・新着の上位約40本と、カテゴリの棚（${S.D.cats.filter(c => c.latest).length}カテゴリを記事番号つきで見た回）です。ここにない＝どこにも出ていない、ではありません。</span></div>`; return; }
+  out.innerHTML = `${ownHtml}<div class="verdict good"><span class="big">${rows.length}か所に出ていました</span></div><div class="scroll"><table><thead><tr><th>場所</th><th>面</th><th class="n">いちばん上</th><th>初めて見た</th><th>最後に見た</th><th class="n">見た回数</th></tr></thead><tbody>${rows.map(r => `<tr><td class="nm"><b>${esc(r.place)}</b></td><td>${SURF[r.sf] || r.sf}</td><td class="n">${isNum(r.best) ? r.best + (r.sf === 's' ? '番目' : '位') : '—'}</td><td class="nm">${md(r.first)}</td><td class="nm">${md(r.last)}</td><td class="n">${r.times}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+// ---------- 画面：骨組みを作る ----------
+function viewOutline() {
+  const f = S.f.ol; const c = S.D.byPath[f.cat] || S.D.cats.find(x => x.ranks.total === 1);
+  const ws = c ? c.cur.words : [];
+  return `<section class="panel">
+    <h2>記事の骨組みを作る（7W1H）</h2>
+    <p class="small muted">選んだカテゴリの棚の数字と、あなたが書いた「試したこと」だけから、判断の木の形の骨組みを作ります。体験や数字は足しません。足りないところは【要記入】で返します。</p>
+    <form id="olForm" class="form" onsubmit="return false">
+      <label>狙うカテゴリ<select id="olCat">${catOptions(c && c.path)}</select></label>
+      <label>棚の言葉（任意）<select id="olWord"><option value="">（使わない）</option>${ws.map(w => `<option value="${esc(w.word)}" ${f.word === w.word ? 'selected' : ''}>${esc(w.word)}（中央値${fmt(w.likes_med)}スキ）</option>`).join('')}</select></label>
+      <label>狙うタグ（任意）<input type="text" id="olTag" value="${esc(f.tag || '')}" placeholder="例：事業承継"></label>
+      <label class="wide">自分が試したこと・見たこと（日付・回数・結果。箇条書きでかまいません）<textarea id="olNotes" placeholder="例：10月に父の会社の相談で商工会議所の窓口へ2回行った／1回目は30分で税理士を紹介された">${esc(f.notes || '')}</textarea></label>
+      <label class="wide">読者の困りごと（任意）<input type="text" id="olPain" value="${esc(f.pain || '')}" placeholder="例：親の会社を継ぐか決める前に、誰に相談すればいいか分からない"></label>
+      <div class="row wide">${S.sample ? '<button class="btn primary" id="olGo" type="button">骨組みを作る</button><button class="btn" id="olStop" type="button" hidden>止める</button>' : ''}<button class="btn${S.sample ? '' : ' primary'}" id="olCopyPrompt" type="button">依頼文を写す</button><span class="tiny" id="olPromptNote">${S.sample ? '「骨組みを作る」はClaudeに頼みます（あなたのClaudeの利用枠を使います）。「依頼文を写す」は、同じ依頼をClaudeのチャットに貼るための文です。' : 'このページからClaudeに頼めないときは、依頼文を写して、Claudeのチャットに貼ってください。'}</span></div>
+      <textarea class="wide" id="olPromptBox" hidden readonly rows="8" aria-label="依頼文"></textarea>
+    </form>
+  </section>
+  <section class="panel" id="olOut"${S.olHtml ? '' : ' hidden'}>${S.olHtml || ''}</section>`;
+}
+function outlinePrompt(forChat) {
+  const f = S.f.ol; const c = S.D.byPath[f.cat] || S.D.cats.find(x => x.ranks.total === 1); if (!c) return null;
+  const s = c.cur; const bs = S.D.D.body_scoring;
+  return { c, text: [
+    'あなたはnoteの記事の設計を手伝います。次のデータだけを使い、記事の骨組みをJSONで返してください。',
+    '', '# 守ること',
+    '- 書き手の体験・数字・日付を作らない。「自分が試したこと」に書かれていないものは、値の代わりに【要記入：何を書くか】と書く。',
+    '- 他人の記事や書き手の名前を出さない。収入や「これで載る」を約束しない。',
+    '- 形は7W1H：What（読者が選べるようになること1文）、Why（読者の場面と書き手が確かめた理由）、分かれ道ごとに Which（選ぶもの）・Why①（理由）・Why②（根拠：誰がいつどこで確かめたか）・How（読者が自分で見られる合図）・選ばなかったもの、最後に Whom（条件が違う人）。',
+    '- 分かれ道は2〜4個。1つの分かれ道＝本文の見出し1つ。見出しは主語と述語のそろった1文にする。',
+    '- タイトル案は、先頭30字以内に狙う言葉と答えを入れる。「○選」「稼げる」「簡単」「保存版」は使わない。',
+    '- 記事の主役は、狙うカテゴリの読者の困りごとにする（noteのAIは本文から分類を決める）。',
+    '- ハッシュタグは中身に合うものを3〜5個。',
+    '', '# 狙うカテゴリの棚の数字（ブラウザ・ログアウトでの観測）',
+    `カテゴリ：${c.name}（狙い目 ${c.scores.total}点、${S.D.nRef}中${c.ranks.total ?? '—'}位）`,
+    `棚の記事${s.n}本：スキ中央値${s.likes_med}、10スキ未満${s.under10_pct}%、24時間以内${s.fresh24_pct}%、有料${s.paid_pct}%（${s.run}）`,
+    `24時間以内の記事：公開から約${s.fresh_age_med_h}時間で中央値${s.fresh_likes_med}スキ`,
+    `棚の言葉：${s.words.map(w => `${w.word}(記事${w.n}本・中央値${w.likes_med}スキ)`).join('、')}`,
+    f.word ? `この記事で使う棚の言葉：${f.word}` : '',
+    f.tag ? `狙うタグ：#${f.tag}` : '',
+    bs && bs.groups.listed ? `# 参考：キーワードのページの新着に並んだ記事${bs.groups.listed.n}本と並ばなかった記事${bs.groups.unlisted.n}本の本文採点（${bs.scored_at.join('、')}）\n並んだ記事のハッシュタグ一致 ${bs.groups.listed.hashtag_has_tag}%、並ばなかった記事 ${bs.groups.unlisted.hashtag_has_tag}%。一次情報の点数の平均は並んだ ${bs.groups.listed.score_mean}・並ばなかった ${bs.groups.unlisted.score_mean}（一次情報の多さでは決まっていなかった）` : '',
+    '', '# 自分が試したこと・見たこと（これ以外の体験は使わない）', f.notes || '（なし。すべて【要記入】で返す）',
+    f.pain ? '# 読者の困りごと\n' + f.pain : '',
+    '', '# 返すJSONの形（このキーだけ）',
+    forChat ? '見出しごとに分けて、日本語の文章で返してください（タイトル案3つ／What／Why／分かれ道ごとの Which・Why①・Why②・How・選ばなかったもの／Whom／ハッシュタグ／公開前に確かめること）。'
+      : '{"titles":["…","…","…"],"what":"…","why":"…","branches":[{"question":"…","which":"…","why1":"…","why2":"…","how":"…","not_chosen":"…"}],"whom":["…"],"hashtags":["#…"],"checks":["公開前に確かめること…"]}',
+  ].filter(Boolean).join('\n').replace('記事の骨組みをJSONで返してください。', forChat ? '記事の骨組みを返してください。' : '記事の骨組みをJSONで返してください。').replace('# 返すJSONの形（このキーだけ）', forChat ? '# 返す形' : '# 返すJSONの形（このキーだけ）') };
+}
+async function copyOutlinePrompt() {
+  const p = outlinePrompt(true); const note = $('#olPromptNote'); if (!p) return;
+  try { await navigator.clipboard.writeText(p.text); if (note) note.textContent = '写しました。Claude のチャットに貼って送ってください。'; }
+  catch (e) { const box = $('#olPromptBox'); if (box) { box.hidden = false; box.value = p.text; box.select(); } if (note) note.textContent = '写せなかったので、下の欄から選んで写してください。'; }
+}
+async function runOutline() {
+  if (!S.sample || S.olBusy) return;
+  const p = outlinePrompt(false); if (!p) return;
+  const { c } = p; const prompt = p.text;
+  const out = $('#olOut'); out.hidden = false; out.innerHTML = '<p class="muted">考え中…（30秒〜1分ほどかかります）</p>';
+  S.olBusy = true; $('#olGo').disabled = true; $('#olStop').hidden = false; S.olCtl = new AbortController();
+  try { const r = await S.sample.json(prompt, { signal: S.olCtl.signal, cache: false }); S.olHtml = renderOutline(r, c); }
+  catch (e) {
+    const code = e && e.code;
+    const msg = code === 'cancelled' ? '止めました。' : ['not_granted', 'sampling_disabled', 'not_declared'].includes(code) ? 'このページからClaudeに頼むことが許可されていません。「依頼文を写す」で、Claudeのチャットに貼って頼めます。' : code === 'rate_limited' ? '頼む回数が多すぎました。少し待ってから押してください。' : code === 'invalid_json' ? '返事の形が崩れました。もう一度押してください。' : code === 'refused' ? 'この内容では作れませんでした。入力を変えてください。' : 'うまく作れませんでした。もう一度押してください。';
+    S.olHtml = `<p class="muted">${msg}</p>`;
+  } finally {
+    S.olBusy = false; const o2 = $('#olOut'); if (o2) { o2.hidden = false; o2.innerHTML = S.olHtml; }
+    const g = $('#olGo'); if (g) g.disabled = false; const st = $('#olStop'); if (st) st.hidden = true;
+  }
+}
+const markNeed = (t) => esc(t).replace(/【要記入[^】]*】/g, m => `<span class="need">${m}</span>`);
+function renderOutline(r, c) {
+  if (!r || typeof r !== 'object') return '<p class="muted">返事を読み取れませんでした。</p>';
+  const arr = (v) => Array.isArray(v) ? v : [];
+  const mdl = ['# ' + (arr(r.titles)[0] || ''), '', 'What：' + (r.what || ''), 'Why：' + (r.why || '')];
+  arr(r.branches).forEach((b, i) => mdl.push('', `## ${b.question || '分かれ道' + (i + 1)}`, '選ぶもの：' + (b.which || ''), '理由：' + (b.why1 || ''), '根拠：' + (b.why2 || ''), '合図：' + (b.how || ''), '選ばなかったもの：' + (b.not_chosen || '')));
+  mdl.push('', '## 条件が違う人は'); arr(r.whom).forEach(w => mdl.push('- ' + w)); mdl.push('', arr(r.hashtags).join(' '));
+  S.olMd = mdl.join('\n');
+  return `<div class="head"><h2>骨組み：${esc(c.short)}</h2><button class="btn" type="button" id="olCopy">Markdownで写す</button></div>
+    <div class="out">
+      <div><span class="tiny">タイトル案</span><ol style="margin-top:4px">${arr(r.titles).map(t => `<li>${markNeed(t)}</li>`).join('')}</ol></div>
+      <div><b>What</b>　${markNeed(r.what)}</div><div><b>Why</b>　${markNeed(r.why)}</div>
+      ${arr(r.branches).map((b, i) => `<div class="branch"><h3>分かれ道${i + 1}：${markNeed(b.question)}</h3><div><b>選ぶもの</b>　${markNeed(b.which)}</div><div><b>理由</b>　${markNeed(b.why1)}</div><div><b>根拠</b>　${markNeed(b.why2)}</div><div><b>合図</b>　${markNeed(b.how)}</div><div><b>選ばなかったもの</b>　${markNeed(b.not_chosen)}</div></div>`).join('')}
+      <div><b>Whom（条件が違う人）</b><ul style="margin-top:4px">${arr(r.whom).map(w => `<li>${markNeed(w)}</li>`).join('')}</ul></div>
+      <div><b>ハッシュタグ</b>　${arr(r.hashtags).map(h => `<span class="chip mid">${esc(h)}</span>`).join(' ')}</div>
+      ${arr(r.checks).length ? `<div><b>公開前に確かめること</b><ul style="margin-top:4px">${arr(r.checks).map(x => `<li>${markNeed(x)}</li>`).join('')}</ul></div>` : ''}
+    </div><p class="tiny" id="olCopyNote">【要記入】の所は、あなたの記録で埋めてください。</p>`;
+}
+
+// ---------- 画面：自分の記事 ----------
+function viewMine() {
+  const own = S.D.D.own || [];
+  const gate = (label, ok, text) => `<div class="row small" style="gap:6px;align-items:baseline"><span class="mark ${ok ? 'ok' : 'ng'}" style="width:20px;height:20px;font-size:12px">${ok ? '○' : '×'}</span><b>${label}</b><span class="muted">${text}</span></div>`;
+  const best = (a) => a.best ? (a.best.surface === 'category' ? `${esc(a.best.category_name || a.best.tag)}の棚「${esc(a.best.section)}」${a.best.rank}番目` : `#${esc(a.best.tag)} ${a.best.surface === 'popular' ? '人気' : '新着'} ${a.best.rank}位`) : '—';
+  const done = own.filter(a => a.appearances.length).length;
+  return `<section class="panel">
+    <div class="head"><h2>自分の記事は、どこまで届いたか</h2><span class="tiny">${own.length}本のうち、観測した面に出たのは${done}本</span></div>
+    <p class="small muted">フィードに載るまでの3つの関門。① 記事にキーワードが付いて、そのキーワードのページ（新着・人気）に出たか。② 記事がどのカテゴリに分類されたか。③ カテゴリの棚に出たか。</p>
+    <div class="scroll"><table><thead><tr><th>記事</th><th>公開</th><th>料金</th><th>いまの状態</th><th class="n">出た回数</th><th>いちばん上の順位</th><th>3つの関門</th><th>ハッシュタグ</th></tr></thead><tbody>${own.slice().sort((a, b) => b.published_at.localeCompare(a.published_at)).map(a => { const g = a.gates || {}; const kw = g.keyword || [], pop = g.popular || [], sh = g.shelf || []; return `<tr><td class="wrap"><b>${esc(a.label)}</b></td><td class="nm">${md(a.published_at)}</td><td>${a.paid ? '有料' : '無料'}</td><td>${esc(a.status)}</td><td class="n">${a.appearances.length}</td><td class="nm">${best(a)}</td><td class="wrap" style="min-width:18rem">${gate('① キーワード', kw.length, kw.length ? kw.map(t => '#' + esc(t)).join(' ') + (pop.length ? `（人気：${pop.map(t => '#' + esc(t)).join(' ')}）` : '（新着だけ）') : '観測したタグには出ていない')}${gate('② カテゴリ', !!g.category, g.category ? esc(g.category) : 'まだ見ていない')}${gate('③ 棚', sh.length, sh.length ? sh.map(esc).join('、') : '見た回の棚には出ていない')}</td><td class="wrap small">${(a.tags || []).map(t => '#' + esc(t)).join(' ')}</td></tr>`; }).join('')}</tbody></table></div>
+    <p class="tiny">①は観測しているタグの中だけで見ています。②は記事のページの分類（パンくず）を見た日のものです。</p>
+  </section>
+  ${own.filter(a => a.appearances.length).map(a => `<details class="panel"><summary>${esc(a.label)}：出た回（${a.appearances.length}回）</summary><ul class="small">${a.appearances.map(p => `<li>${md(p.run_at)}　${p.kind === 'shelf' ? `${esc(p.category_name || p.tag)}の棚「${esc(p.section)}」${p.rank}番目` : `#${esc(p.tag)} ${p.surface === 'popular' ? '人気' : '新着'} ${p.rank}位`}</li>`).join('')}</ul></details>`).join('')}`;
+}
+
+// ---------- 画面：仮説と根拠 ----------
+function viewProof() {
+  const H = S.D.D.hypotheses; const items = (H.items || []).slice().sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
+  const cnt = {}; items.forEach(h => { cnt[h.status_label] = (cnt[h.status_label] || 0) + 1; });
+  const bs = S.D.D.body_scoring;
+  return `<section class="panel">
+    <div class="head"><h2>仮説と、確かめた結果</h2><span class="tiny">${esc(H.updated_at)}時点・${items.length}件（${Object.entries(cnt).map(([k, v]) => `${k}${v}`).join('・')}）</span></div>
+    <div class="scroll"><table><thead><tr><th>結果</th><th>主張・仮説</th><th>根拠</th></tr></thead><tbody>${items.map(h => `<tr><td class="nm"><span class="chip ${PILL[h.status] || 'none'}">${esc(h.status_label)}</span><div class="tiny">${esc(h.id)}</div></td><td class="wrap"><b>${esc(h.claim)}</b></td><td class="wrap small muted">${esc(h.evidence)}</td></tr>`).join('')}</tbody></table></div>
+  </section>
+  ${bs ? `<section class="panel">
+    <div class="head"><h2>何を書けば並ぶか：本文の採点から</h2><span class="tiny">${bs.tags.map(t => '#' + esc(t)).join('・')}・${bs.scored_at.join('、')}・${esc(bs.method.join('、'))}</span></div>
+    <p class="small">キーワードのページの新着に並んだ記事${bs.groups.listed.n}本と、並ばなかった記事${bs.groups.unlisted.n}本を、同じ物差しで採点しました。<b>一次情報の多さでは、並ぶかどうかは決まっていませんでした</b>（平均 ${bs.groups.listed.score_mean}点と${bs.groups.unlisted.score_mean}点、5点満点）。差が大きかったのは、そのタグをハッシュタグに付けていたかどうかでした。</p>
+    <div class="scroll">${bodySvg(bs)}</div>
+    <p class="tiny">20本だけの比べなので、傾向として見てください。並んだかどうかは中身（無料部分の話題）が言葉に合うかで決まるという仮説（H32）と合わせて、次の記事で確かめます。一次情報の多さは、並んだ後に読まれ、スキや購入につながるかで効くと見ています（未確認）。</p>
+  </section>` : ''}
+  ${nodesPanel(S.D.D.nodes)}
+  ${weeksPanel(S.D.D.scoring_weeks)}`;
+}
+function weeksPanel(W) {
+  if (!W || !W.weeks || !W.weeks.length) return '';
+  const keys = Object.keys(W.weeks[0].item_rate || {}); const bkeys = Object.keys(W.weeks[0].bonus_rate || {});
+  return `<section class="panel">
+    <div class="head"><h2>人気の上位は、一次情報の点が何点か：週ごとの採点</h2><span class="tiny">${W.weeks.length}週・${W.weeks.reduce((a, w) => a + w.n, 0)}本</span></div>
+    <p class="small">毎週、人気の上位20本と新しく入った記事を、基本10項目（1項目1点）と書き方の加点4項目で採点しています。基本5点以上を紹介記事に載せています。</p>
+    <div class="scroll"><table><thead><tr><th>週</th><th>タグ</th><th class="n">本数</th><th class="n">5点以上</th><th class="n">基本の中央値</th><th class="n">前半5項目</th><th class="n">加点の中央値</th>${keys.map(k => `<th class="n">${esc(k)}</th>`).join('')}${bkeys.map(k => `<th class="n">加:${esc(k)}</th>`).join('')}</tr></thead><tbody>${W.weeks.map(w => `<tr><td>${esc(w.week)}</td><td class="nm">#${esc(w.tag)}</td><td class="n">${w.n}</td><td class="n">${w.featured}</td><td class="n">${fmt(w.total_med, 1)}</td><td class="n">${fmt(w.first5_med, 1)}</td><td class="n">${fmt(w.bonus_med, 1)}</td>${keys.map(k => `<td class="n">${isNum(w.item_rate[k]) ? Math.round(w.item_rate[k] * 100) + '%' : '—'}</td>`).join('')}${bkeys.map(k => `<td class="n">${isNum((w.bonus_rate || {})[k]) ? Math.round(w.bonus_rate[k] * 100) + '%' : '—'}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <p class="tiny">${esc(W.source)}。項目の列は、その項目があった記事の割合。10月末の本文採点では、人気に入った記事の前半5項目の平均は3.8点でした。${esc(W.note)}。</p>
+  </section>`;
+}
+// ---------- 一次情報の点（10項目）：本文から合図を数える ----------
+function scorePanel() {
+  const R = S.D.D.scoring; if (!R) return '';
+  return `<section class="panel">
+    <div class="head"><h2>一次情報スコア：本文の合図を数える</h2><span class="tiny">基本10点（読者が確かめられる形）＋書き方の加点4点。無料部分の本文を貼ると、項目ごとの合図を数えます。自分の下書きにも、人の記事にも使えます</span></div>
+    <form class="form" id="scForm" onsubmit="return false">
+      <label class="wide">本文（無料部分。見出しや箇条書きはそのままでよい）<textarea id="scText" rows="9" placeholder="ここに本文を貼ります。貼った本文はこのページの中で数えるだけで、保存も送信もしません。">${esc(S.scoreText || '')}</textarea></label>
+      <label class="wide">タイトル（分かれば。書き出しの加点を見るときに使う）<input type="text" id="scTitle" value="${esc(S.scoreTitle || '')}" placeholder="例：在宅ワークの事務を、週3日から始めた記録"></label>
+      <label>公開日（分かれば）<input type="date" id="scPub" value="${esc(S.scorePub || '')}"></label>
+      <label>どのページで見た記事か（任意、メモ）<input type="text" id="scFrom" value="${esc(S.scoreFrom || '')}" placeholder="例：#note副業 人気 3位"></label>
+    </form>
+    <div id="scOut">${scoreOut()}</div>
+    <div class="row wide" style="margin-top:10px">${S.sample ? '<button class="btn primary" id="scGo" type="button">Claudeに10項目を判定してもらう</button>' : ''}<button class="btn${S.sample ? '' : ' primary'}" id="scCopy" type="button">採点の依頼文を写す</button><span class="tiny" id="scNote">${S.sample ? '合図の数は目安です。点数は、Claudeに10項目を判定してもらうか、自分で付けます。Claudeに頼むときだけ、本文をClaudeに送ります。' : '合図の数は目安です。点数は「採点の依頼文を写す」でClaudeのチャットに貼って判定してもらうか、自分で付けます。'}</span></div>
+    <textarea class="wide" id="scPromptBox" hidden readonly rows="6" aria-label="採点の依頼文"></textarea>
+    <div id="scClaude">${S.scoreHtml || ''}</div>
+    <p class="tiny">${esc(R.note)}</p>
+  </section>`;
+}
+function scSentences(text) {
+  const out = [];
+  for (const para of String(text || '').replace(/\r\n/g, '\n').split(/\n\s*\n|\n/)) {
+    for (const s of para.replace(/([。！？!?])/g, '$1\u0001').split('\u0001')) { const t = s.trim(); if (t) out.push(t); }
+  }
+  return out;
+}
+function scDates(text, ref) {
+  const found = [];
+  const push = (y, mo, d) => { const dt = new Date(y, mo - 1, d); if (dt.getMonth() === mo - 1) found.push(dt); };
+  for (const m of text.matchAll(/(20\d\d)年(\d{1,2})月(?:(\d{1,2})日)?/g)) push(+m[1], +m[2], m[3] ? +m[3] : 1);
+  for (const m of text.matchAll(/(20\d\d)[-/](\d{1,2})[-/](\d{1,2})/g)) push(+m[1], +m[2], +m[3]);
+  for (const m of text.matchAll(/(\d{1,2})月(\d{1,2})日/g)) {
+    if (m.index > 0 && /\d/.test(text[m.index - 1])) continue;
+    const base = ref || new Date(); let y = base.getFullYear();
+    if (ref && new Date(y, +m[1] - 1, +m[2]) > ref) y -= 1;
+    push(y, +m[1], +m[2]);
+  }
+  return found;
+}
+function scoreRules(text, published) {
+  const R = S.D.D.scoring; const sents = scSentences(text); const body = sents.join('\n');
+  const chars = String(text || '').replace(/\s/g, '').length;
+  const ref = published ? new Date(published) : null; const refOk = ref && !isNaN(ref);
+  const items = [];
+  for (const it of R.items) {
+    const rxs = it.patterns.map(p => new RegExp(p, 'mu'));
+    const hits = sents.filter(s => rxs.some(r => r.test(s))); const n = hits.length;
+    if (it.id === 's10') {
+      const ds = scDates(body, refOk ? ref : null); const base = refOk ? ref : new Date();
+      const recent = ds.filter(d => { const days = (base - d) / 864e5; return days >= 0 && days <= 92; });
+      const newest = ds.length ? new Date(Math.max(...ds)) : null;
+      items.push({ id: it.id, key: it.key, text: it.text, n: ds.length, likely: recent.length > 0, detail: (newest ? `いちばん新しい日付 ${newest.getFullYear()}-${String(newest.getMonth() + 1).padStart(2, '0')}-${String(newest.getDate()).padStart(2, '0')}` : '日付なし') + (refOk ? '' : '（公開日が無いので今日から数えた）') });
+      continue;
+    }
+    if (it.id === 's9') {
+      const linked = hits.filter(s => /https?:\/\/|20\d\d年|\d{1,2}月\d{1,2}日|によると|によれば/u.test(s)).length;
+      items.push({ id: it.id, key: it.key, text: it.text, n, likely: n === 0 || linked >= 2 || linked * 2 >= n, detail: n === 0 ? '外の情報の言い回しなし' : `外の情報らしい文 ${n}、名前・日付・リンク付き ${linked}` });
+      continue;
+    }
+    items.push({ id: it.id, key: it.key, text: it.text, n, likely: n >= (it.min || 1), detail: `合図のある文 ${n}（目安 ${it.min || 1}以上）` });
+  }
+  const w = R.w7h1.map(q => { const rxs = q.patterns.map(p => new RegExp(p, 'mu')); return { key: q.key, found: sents.some(s => rxs.some(r => r.test(s))) }; });
+  const numbers = (body.match(/\d[\d,.]*\s*(?:回|件|本|人|名|字|文字|分|時間|日|週|円|万円|%|％|割|倍|位)/g) || []).length;
+  const lines = String(text || '').replace(/\r\n/g, '\n').split('\n').map(x => x.trim()).filter(Boolean);
+  const heads = lines.filter(ln => (ln.startsWith('#') || (ln.length <= 30 && !/[。！？!?、,]$/.test(ln) && !/^[・\-*]/.test(ln))) && ln.length >= 4);
+  const bullets = lines.filter(ln => /^([・\-*•]|[0-9０-９]+[.．、）)]|[①②③④⑤⑥⑦⑧⑨])/.test(ln));
+  const avgLen = sents.length ? Math.round(sents.reduce((a, x) => a + x.length, 0) / sents.length * 10) / 10 : 0;
+  const figures = (body.match(/(図|表|スクショ|スクリーンショット|画像|グラフ)[0-9０-９]?[:：）)]|（(図|表|写真)[0-9０-９]*）/g) || []).length;
+  const first3 = sents.filter(x => !/^(皆様|みなさん|こんにちは|おはよう|こんばんは|本日は)/.test(x)).slice(0, 3);
+  const wFound = w.filter(x => x.found).length;
+  const bonus = [
+    { key: '7W1H', likely: wFound === w.length, detail: `自動で分かる${w.length}つのうち ${wFound}（「何を」は人が判断）` },
+    { key: '書き出し', likely: null, detail: first3.length ? `あいさつの後の3文：「${first3.join('').slice(0, 80)}…」${S.scoreTitle ? ' — タイトルの問いに答えているかを見る' : ''}` : '本文が短すぎます' },
+    { key: '独自性', likely: null, detail: `表らしい行 ${lines.filter(ln => (ln.split('|').length - 1) >= 2 || (ln.split('｜').length - 1) >= 2).length}。自分で作った表・比べ・名前付けがあるかは、人か Claude が判断` },
+    { key: '読みやすさ', likely: [heads.length >= 2, bullets.length >= 3, avgLen <= 50, figures >= 1].filter(Boolean).length >= 2, detail: `見出しらしい行 ${heads.length}・箇条書き ${bullets.length}・1文の平均 ${avgLen}字・図表の印 ${figures}` },
+  ];
+  return { chars, sentences: sents.length, numbers, dates: scDates(body, refOk ? ref : null).length, links: (body.match(/https?:\/\//g) || []).length, items, likely: items.filter(i => i.likely).length, w, bonus };
+}
+function scoreOut() {
+  const t = S.scoreText || ''; if (t.replace(/\s/g, '').length < 40) return '<p class="empty">本文を貼ると、ここに合図の数が出ます。</p>';
+  const r = scoreRules(t, S.scorePub); S.scoreRules = r;
+  const min = (S.D.D.scoring.feature_min || 5);
+  const tiles = [['合図のある項目', `${r.likely}<span class="small"> / 10</span>`, `目安。${min}点以上を紹介する基準`], ['字数', fmt(r.chars), '空白を除く'], ['単位つきの数字', fmt(r.numbers), '回・分・円・%など'], ['日付', fmt(r.dates), '年月日・月日'], ['リンク', fmt(r.links), 'http で始まるもの']];
+  return `<div class="tiles" style="margin:10px 0">${tiles.map(([k, v, h]) => `<div class="tile"><span class="k">${k}</span><span class="v">${v}</span><span class="h">${h}</span></div>`).join('')}</div>
+  <div class="scroll"><table><thead><tr><th>項目</th><th>何があれば1点か</th><th class="n">合図</th><th>目安</th></tr></thead><tbody>${r.items.map(i => `<tr><td class="nm">${esc(i.key)}</td><td class="wrap small">${esc(i.text)}</td><td class="n">${i.n}</td><td><span class="chip ${i.likely ? 'good' : 'mid'}">${i.likely ? 'ありそう' : 'なさそう'}</span> <span class="tiny">${esc(i.detail)}</span></td></tr>`).join('')}</tbody></table></div>
+  <p class="small" style="margin-top:8px">7W1H：${r.w.map(x => `<span class="chip ${x.found ? 'good' : 'mid'}">${esc(x.key)} ${x.found ? '○' : '—'}</span>`).join(' ')} <span class="chip mid">何を（本文全体。人が判断）</span></p>
+  <h3 style="margin:14px 0 6px">書き方の加点（最大${S.D.D.scoring.bonus_max || 4}点）</h3>
+  <div class="scroll"><table><thead><tr><th>項目</th><th>何があれば1点か</th><th>合図</th></tr></thead><tbody>${(S.D.D.scoring.bonus || []).map((b, i) => { const x = r.bonus[i] || {}; return `<tr><td class="nm">${esc(b.key)}</td><td class="wrap small">${esc(b.text)}</td><td>${x.likely === null || x.likely === undefined ? '<span class="chip warn">人が判断</span>' : `<span class="chip ${x.likely ? 'good' : 'mid'}">${x.likely ? 'ありそう' : 'なさそう'}</span>`} <span class="tiny">${esc(x.detail || '')}</span></td></tr>`; }).join('')}</tbody></table></div>`;
+}
+function scorePromptText(forChat) {
+  const R = S.D.D.scoring; const t = S.scoreText || '';
+  const head = [R.chat_prompt_head, '', '# 基本の10項目', ...R.items.map((it, i) => `${i + 1}. ${it.key}：${it.text}`), '', '# 書き方の加点（4項目）', ...(R.bonus || []).map((b, i) => `${i + 1}. ${b.key}：${b.text}`), ''];
+  if (S.scoreTitle) head.push(`タイトル：${S.scoreTitle}`);
+  if (S.scorePub) head.push(`公開日：${S.scorePub}`);
+  if (S.scoreFrom) head.push(`見たページ：${S.scoreFrom}`);
+  head.push('', forChat ? '# 返す形\n基本と加点の項目ごとに「番号 項目名 1か0 根拠」を1行ずつ、最後に「基本 n/10・加点 m/4」と「7W1H：…」。' : '# 返すJSONの形（このキーだけ）\n{"items":[{"id":"s1","v":1,"why":"根拠を20字まで"}],"bonus":[{"id":"b1","v":1,"why":"根拠を20字まで"}],"total":7,"bonus_total":2,"w7h1":["いつ","誰が"],"one_line":"この記事を一言で（30字まで、書き手の名前は入れない）"}', '', '# 本文', t);
+  return head.join('\n');
+}
+async function copyScorePrompt() {
+  const note = $('#scNote'); const p = scorePromptText(true);
+  try { await navigator.clipboard.writeText(p); if (note) note.textContent = '写しました。Claude のチャットに貼って送ってください。'; }
+  catch (e) { const box = $('#scPromptBox'); if (box) { box.hidden = false; box.value = p; box.select(); } if (note) note.textContent = '写せなかったので、下の欄から選んで写してください。'; }
+}
+async function runScoreClaude() {
+  if (!S.sample || S.scBusy) return; const out = $('#scClaude'); if (!out) return;
+  if ((S.scoreText || '').replace(/\s/g, '').length < 40) { out.innerHTML = '<p class="empty">本文を貼ってから頼んでください。</p>'; return; }
+  S.scBusy = true; out.innerHTML = '<p class="muted">Claudeが10項目を判定しています…</p>';
+  try {
+    const r = await S.sample.json(scorePromptText(false), { cache: false });
+    const R = S.D.D.scoring; const items = Array.isArray(r.items) ? r.items : []; const bon = Array.isArray(r.bonus) ? r.bonus : [];
+    const byId = Object.fromEntries(items.map(x => [x.id, x])); const byB = Object.fromEntries(bon.map(x => [x.id, x]));
+    const total = R.items.reduce((a, it) => a + ((byId[it.id] && +byId[it.id].v === 1) ? 1 : 0), 0);
+    const btotal = (R.bonus || []).reduce((a, b) => a + ((byB[b.id] && +byB[b.id].v === 1) ? 1 : 0), 0);
+    const min = R.feature_min || 5;
+    const li = (key, x) => { const v = +x.v === 1; return `<li><span class="mark ${v ? 'ok' : 'ng'}">${v ? '1' : '0'}</span><span><b>${esc(key)}</b>${x.why ? `<span class="tiny"> — ${esc(x.why)}</span>` : ''}</span></li>`; };
+    S.scoreHtml = `<div class="panel hi" style="margin-top:10px"><p><b>Claudeの判定：基本 ${total} / 10 ＋ 加点 ${btotal} / ${R.bonus_max || 4}</b>　${total >= min ? `<span class="chip good">基本${min}点以上</span>` : `<span class="chip mid">基本${min}点未満</span>`}${r.one_line ? `　<span class="small">${esc(r.one_line)}</span>` : ''}</p>
+      <ul class="checks">${R.items.map(it => li(it.key, byId[it.id] || {})).join('')}</ul>
+      <p class="small" style="margin:10px 0 4px"><b>書き方の加点</b></p>
+      <ul class="checks">${(R.bonus || []).map(b => li(b.key, byB[b.id] || {})).join('')}</ul>
+      ${Array.isArray(r.w7h1) && r.w7h1.length ? `<p class="small">7W1H：${r.w7h1.map(esc).join('・')}</p>` : ''}
+      <p class="tiny">判定はClaudeによるもので、同じ本文でも回によって1点ほど変わることがあります。本文も結果も、このページには保存しません。</p></div>`;
+    out.innerHTML = S.scoreHtml;
+  } catch (e) {
+    const code = e && e.code; out.innerHTML = `<p class="empty">${code === 'not_granted' ? 'このページからClaudeに頼むことが許可されていません。「採点の依頼文を写す」で、Claudeのチャットに貼って頼めます。' : '判定できませんでした。' + esc((e && e.message) || '')}</p>`;
+  } finally { S.scBusy = false; }
+}
+function nodesPanel(N) {
+  if (!N || !N.groups || !N.groups['上位'] || !N.groups['上位外']) return '';
+  const A = N.groups['上位'], B = N.groups['上位外'];
+  const rows = [['距離2の割合', 'dist2_pct', '%', N.definitions.dist2_pct], ['一次情報の割合', 'primary_pct', '%', N.definitions.primary_pct], ['無料部分の字数', 'free_chars', '字', ''], ['ノード数', 'nodes', '', '本文を、問いに答える単位に分けた数'], ['距離0の問いの数', 'q0', '', N.definitions.q0], ['スキ（選んだとき）', 'likes', '', '']];
+  const kinds = (g) => Object.entries(g.kinds || {}).map(([k, v]) => `${esc(k)} ${v}`).join('・') || '—';
+  const promo = (g) => Object.entries(g.promo || {}).map(([k, v]) => `${esc(k)} ${v}`).join('・') || '—';
+  const short = A.n + B.n < (N.goal || 10) * 2;
+  return `<section class="panel">
+    <div class="head"><h2>上位の記事は、本文をどう分けているか：ノード比較</h2><span class="tiny">#${N.tags.map(esc).join('・#')}・${esc(N.from)}〜${esc(N.to)}・上位${A.n}本と上位外${B.n}本</span></div>
+    <p class="small">同じタグの人気の上位に出た記事と、出なかった記事の無料部分を、同じ手順でノード（問いに答える単位）に分けて比べています。数字は組ごとの中央値です。</p>
+    <div class="scroll"><table><thead><tr><th>見たこと</th><th class="n">上位（${A.n}本）</th><th class="n">上位外（${B.n}本）</th><th>意味</th></tr></thead><tbody>${rows.map(([l, k, u, d]) => `<tr><td>${l}</td><td class="n">${isNum(A[k]) ? fmt(A[k], u === '%' ? 1 : 0) + u : '—'}</td><td class="n">${isNum(B[k]) ? fmt(B[k], u === '%' ? 1 : 0) + u : '—'}</td><td class="wrap small muted">${esc(d)}</td></tr>`).join('')}
+      <tr><td>有料の本数</td><td class="n">${A.paid_n}本</td><td class="n">${B.paid_n}本</td><td></td></tr>
+      <tr><td>本の種類</td><td class="small">${kinds(A)}</td><td class="small">${kinds(B)}</td><td class="wrap small muted">集める本＝無料部分で問いに答える本。売る本＝答えを有料部分に置く本</td></tr>
+      <tr><td>告知・販売の位置</td><td class="small">${promo(A)}</td><td class="small">${promo(B)}</td><td></td></tr></tbody></table></div>
+    <p class="tiny">${esc(N.source)}。${short ? `各組${N.goal || 10}本ずつそろうまでは傾向として見てください（いま上位${A.n}本・上位外${B.n}本）。` : ''}記事のURL・タイトル・書き手は、このページには入れていません。</p>
+  </section>`;
+}
+function bodySvg(bs) {
+  const L = bs.groups.listed, U = bs.groups.unlisted;
+  const rows = bs.rubric.map((r, i) => [r, L.items[i], U.items[i]]).concat([['そのタグをハッシュタグに付けている', L.hashtag_has_tag, U.hashtag_has_tag], ['本文の話題がそのタグに合う', L.topic_matches_tag, U.topic_matches_tag]]);
+  const W = 720, rowH = 38, Lp = 300, R = 50, T = 26, H = T + rows.length * rowH + 10;
+  const X = v => Lp + v / 100 * (W - Lp - R);
+  let o = svgOpen(W, H, '並んだ記事と並ばなかった記事の比べ', 520);
+  o += `<rect x="${Lp}" y="6" width="10" height="10" rx="2" fill="var(--accent)"/><text class="lbl" x="${Lp + 14}" y="15">新着に並んだ（${L.n}本）</text><rect x="${Lp + 150}" y="6" width="10" height="10" rx="2" fill="var(--dot-old)"/><text class="lbl" x="${Lp + 164}" y="15">並ばなかった（${U.n}本）</text>`;
+  rows.forEach(([label, a, b], i) => {
+    const y = T + i * rowH; const big = Math.abs(a - b) >= 30;
+    o += `<text x="${Lp - 10}" y="${y + 18}" text-anchor="end" font-size="12" ${big ? 'style="font-weight:700"' : ''}>${esc(label.length > 24 ? label.slice(0, 24) + '…' : label)}</text>`;
+    o += `<rect x="${Lp}" y="${y + 4}" width="${Math.max(2, X(a) - Lp)}" height="12" rx="3" fill="var(--accent)"/><text x="${X(a) + 4}" y="${y + 14}" font-size="11" class="num">${a}%</text>`;
+    o += `<rect x="${Lp}" y="${y + 18}" width="${Math.max(2, X(b) - Lp)}" height="12" rx="3" fill="var(--dot-old)"/><text x="${X(b) + 4}" y="${y + 28}" font-size="11" class="num">${b}%</text>`;
+  });
+  return o + '</svg>';
+}
+
+// ---------- 画面：数字の出どころ ----------
+function viewAbout() {
+  const D = S.D.D; const cv = D.coverage || {}; const defs = D.score_defs;
+  const kinds = [['series', '定時観測（タグの人気・新着）'], ['scan', '狙い目タグ探し'], ['shelf', 'カテゴリの棚']];
+  const defBlock = (title, d) => `<div class="card"><h3>${title}</h3><ul class="small">${Object.entries(d).map(([k, v]) => `<li><b>${esc(v.label)}</b>：${v.parts.map(esc).join('／')}</li>`).join('')}</ul></div>`;
+  return `<section class="panel">
+    <h2>観測した範囲</h2>
+    <div class="scroll"><table><thead><tr><th>観測</th><th class="n">回数</th><th>期間</th><th class="n">タグ・カテゴリ</th></tr></thead><tbody>${kinds.filter(([k]) => cv[k]).map(([k, l]) => `<tr><td>${l}</td><td class="n">${cv[k].runs}</td><td class="nm">${md(cv[k].from)} 〜 ${md(cv[k].to)}</td><td class="n">${cv[k].tags}</td></tr>`).join('')}</tbody></table></div>
+    ${(D.gaps || []).length ? `<details><summary>観測が6時間以上空いたところ（${D.gaps.length}回）</summary><p class="small muted">${D.gaps.map(g => `${md(g.from)}〜${md(g.to)}（${g.hours}時間）`).join('、')}</p></details>` : ''}
+    <p class="small">ブラウザでログアウトしたまま、決まった時刻にnoteのタグのページ（人気・新着）とカテゴリのページを見た記録です。ほかの書き手の名前・記事のタイトル・URLは、このページには入れていません。数字はタグとカテゴリごとの集計と、棚の記事ごとのスキ・公開からの時間・有料かどうかだけです。</p>
+    ${D.sheet ? `<p class="small">タグの件数と小カテ（関連キーワード）は、${esc(D.sheet.source)}の写し（${md(D.sheet.from)}〜${md(D.sheet.to)}）。</p>` : ''}
+  </section>
+  <section class="panel">
+    <h2>点数の出し方</h2>
+    <ul class="small">${defs.common.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+    <div class="grid3">${defBlock('カテゴリ', defs.category)}${defBlock('タグ', defs.tag)}${defBlock('棚の言葉', defs.word)}</div>
+    <p class="tiny">点数は観測の範囲での目安です。点数の高い所に出せば棚に載る、という約束ではありません。決め方は観測が増えるたびに見直します。</p>
+  </section>`;
+}
+
+// ---------- 組み立て ----------
+const VIEWS = { home: viewHome, cats: viewCats, words: viewWords, tags: viewTags, timing: viewTiming, check: viewCheck, outline: viewOutline, mine: viewMine, proof: viewProof, about: viewAbout };
+function status() {
+  const D = S.D.D; const cv = D.coverage || {};
+  return `<span>データ更新 <b>${md(D.generated_at)}</b></span><span>カテゴリの棚 <b>${baseLabel(S.D.C)}</b></span>${cv.series ? `<span>定時観測 <b>${cv.series.runs}回</b>（${md(cv.series.from).split(' ')[0]}〜${md(cv.series.to).split(' ')[0]}）</span>` : ''}`;
+}
+function render() {
+  if (!S.D) return;
+  const focus = document.activeElement && document.activeElement.id; const caret = focus && document.activeElement.selectionStart;
+  $$('#tabs a').forEach(a => a.setAttribute('aria-current', a.dataset.v === S.view ? 'page' : 'false'));
+  $('#status').innerHTML = status();
+  let html;
+  try { html = VIEWS[S.view](); } catch (e) { console.error(e); html = `<section class="panel"><p class="muted">この面を描けませんでした（${esc(e && e.message)}）。ほかの面は使えます。</p></section>`; }
+  $('#view').innerHTML = html;
+  if (S.view === 'check' && $('#lookUrl') && $('#lookUrl').value) runLook();
+  if (focus) { const el = document.getElementById(focus); if (el) { el.focus(); try { if (caret != null && el.setSelectionRange) el.setSelectionRange(caret, caret); } catch (e) { /* 文字の位置を戻せない欄もある */ } } }
+}
+function route() { const h = (location.hash || '').replace('#', ''); S.view = VIEWS[h] ? h : 'home'; render(); }
+function openCat(path) {
+  S.cat = path;
+  if (S.view !== 'cats') { location.hash = '#cats'; } else render();
+  requestAnimationFrame(() => { const el = $('#catDetail'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+}
+document.addEventListener('click', (e) => {
+  const cat = e.target.closest('[data-cat]');
+  if (cat && !e.target.closest('button.sort')) { e.preventDefault(); openCat(cat.dataset.cat); return; }
+  const tg = e.target.closest('[data-tag]');
+  if (tg) { S.tag = tg.dataset.tag; if (S.view !== 'tags') location.hash = '#tags'; else render(); requestAnimationFrame(() => { const el = $('#tagDetail'); if (el && !e.target.closest('#tagDetail')) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }); return; }
+  const sc = e.target.closest('[data-catscope]'); if (sc) { S.f.catScope = sc.dataset.catscope; savePrefs(); render(); return; }
+  const ts = e.target.closest('[data-tagsrc]'); if (ts) { S.f.tagSrc = ts.dataset.tagsrc; savePrefs(); render(); return; }
+  const tk = e.target.closest('[data-trend]'); if (tk) { S.f.trendKey = tk.dataset.trend; savePrefs(); render(); return; }
+  if (e.target.closest('#closeCat')) { S.cat = null; render(); return; }
+  if (e.target.closest('#lookGo')) { runLook(); return; }
+  if (e.target.closest('#olGo')) { runOutline(); return; }
+  if (e.target.closest('#olStop')) { if (S.olCtl) S.olCtl.abort(); return; }
+  if (e.target.closest('#olCopyPrompt')) { copyOutlinePrompt(); return; }
+  if (e.target.closest('#scGo')) { runScoreClaude(); return; }
+  if (e.target.closest('#scCopy')) { copyScorePrompt(); return; }
+  if (e.target.closest('#olCopy')) {
+    const note = $('#olCopyNote');
+    try { navigator.clipboard.writeText(S.olMd).then(() => { if (note) note.textContent = '写しました。'; }, () => { if (note) note.textContent = '写せませんでした。下の文を選んで写してください。'; }); } catch (err) { if (note) note.textContent = '写せませんでした。'; }
+  }
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.matches && e.target.matches('tr.pick, g.pt')) { e.target.dispatchEvent(new MouseEvent('click', { bubbles: true })); } });
+document.addEventListener('input', (e) => {
+  const id = e.target.id;
+  if (id === 'catQ') { S.f.catQ = e.target.value; render(); }
+  else if (id === 'wordQ') { S.f.wordQ = e.target.value; render(); }
+  else if (['calcLikes', 'calcHours'].includes(id)) { S.f.calc.likes = $('#calcLikes').value; S.f.calc.hours = $('#calcHours').value; $('#calcOut').innerHTML = calcOut($('#calcCat').value, num(S.f.calc.likes), num(S.f.calc.hours)); }
+  else if (['dTitle', 'dLead', 'dTags', 'dTime'].includes(id)) { readDraft(); $('#draftOut').innerHTML = draftItems(); }
+  else if (['scText', 'scPub', 'scFrom', 'scTitle'].includes(id)) { S.scoreText = $('#scText').value; S.scorePub = $('#scPub').value; S.scoreFrom = $('#scFrom').value; S.scoreTitle = $('#scTitle').value; S.scoreHtml = ''; clearTimeout(S.scT); S.scT = setTimeout(() => { const o = $('#scOut'); if (o) o.innerHTML = scoreOut(); const c = $('#scClaude'); if (c) c.innerHTML = ''; }, 250); }
+  else if (['olNotes', 'olPain', 'olTag'].includes(id)) { S.f.ol.notes = $('#olNotes').value; S.f.ol.pain = $('#olPain').value; S.f.ol.tag = $('#olTag').value.replace(/^[#＃]/, ''); }
+});
+function readDraft() { S.f.draft = { cat: $('#dCat').value, tag: $('#dTag').value, time: $('#dTime').value, title: $('#dTitle').value, lead: $('#dLead').value, tags: $('#dTags').value }; }
+document.addEventListener('change', (e) => {
+  const id = e.target.id;
+  if (id === 'showRef') { S.f.showRef = e.target.checked; savePrefs(); render(); }
+  else if (id === 'wordRun') { S.f.wordRun = e.target.value; savePrefs(); render(); }
+  else if (id === 'wordMin') { S.f.wordMin = +e.target.value; savePrefs(); render(); }
+  else if (id === 'tagSel') { S.tag = e.target.value; render(); }
+  else if (id === 'calcCat') { S.f.calc.cat = e.target.value; $('#calcOut').innerHTML = calcOut(S.f.calc.cat, num($('#calcLikes').value), num($('#calcHours').value)); }
+  else if (['dCat', 'dTag'].includes(id)) { readDraft(); $('#draftOut').innerHTML = draftItems(); }
+  else if (id === 'olCat') { S.f.ol.cat = e.target.value; S.f.ol.word = ''; render(); }
+  else if (id === 'olWord') { S.f.ol.word = e.target.value; }
+});
+document.addEventListener('submit', (e) => { if (e.target.id === 'lookForm') { e.preventDefault(); runLook(); } });
+window.addEventListener('hashchange', route);
+
+async function boot() {
+  try {
+    const el = document.getElementById('obsData');
+    if (el && el.textContent.trim()) S.D = prep(JSON.parse(el.textContent));
+    else {
+      const r = await fetch('data.json', { cache: 'no-cache' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      S.D = prep(await r.json());
+    }
+  } catch (e) {
+    $('#view').innerHTML = `<section class="panel"><p>観測データを読み込めませんでした（${esc(e && e.message)}）。ページを開き直してください。</p></section>`;
+    $('#status').textContent = '読み込めませんでした';
+    return;
+  }
+  route();
+  try { const cl = window.claude; if (cl && cl.use) { S.sample = await cl.use('sample'); if (S.view === 'outline') render(); } } catch (e) { S.sample = null; }
+}
+boot();
+})();
+</script>
