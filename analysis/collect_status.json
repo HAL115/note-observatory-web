@@ -21,6 +21,17 @@
    "files": [
     "data/raw/series/note_観測ログ_raw_2026-11-10_1250.csv"
    ]
+  },
+  {
+   "kind": "shelf",
+   "started": "2026-11-11 00:46",
+   "finished": "2026-11-11 00:47",
+   "pages": 10,
+   "items": 432,
+   "errors": [],
+   "files": [
+    "note_棚_raw_2026-11-11_0046.csv"
+   ]
   }
  ]
 }
