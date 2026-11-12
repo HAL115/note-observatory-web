@@ -89,6 +89,17 @@
    "files": [
     "data/raw/series/note_観測ログ_raw_2026-11-12_1133.csv"
    ]
+  },
+  {
+   "kind": "shelf",
+   "started": "2026-11-13 01:15",
+   "finished": "2026-11-13 01:16",
+   "pages": 10,
+   "items": 411,
+   "errors": [],
+   "files": [
+    "note_棚_raw_2026-11-13_0115.csv"
+   ]
   }
  ]
 }
