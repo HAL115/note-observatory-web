@@ -78,6 +78,17 @@
    "files": [
     "note_棚_raw_2026-11-12_0037.csv"
    ]
+  },
+  {
+   "kind": "series",
+   "started": "2026-11-12 11:33",
+   "finished": "2026-11-12 11:34",
+   "pages": 12,
+   "items": 577,
+   "errors": [],
+   "files": [
+    "data/raw/series/note_観測ログ_raw_2026-11-12_1133.csv"
+   ]
   }
  ]
 }
