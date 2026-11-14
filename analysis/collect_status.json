@@ -155,6 +155,19 @@
    "files": [
     "data/raw/series/note_観測ログ_raw_2026-11-14_1051.csv"
    ]
+  },
+  {
+   "kind": "shelf",
+   "started": "2026-11-14 23:31",
+   "finished": "2026-11-14 23:32",
+   "pages": 10,
+   "items": 377,
+   "errors": [
+    "science_technology/ai_machine_learning: HTTP 503 https://note.com/topic/science_technology/ai_machine_learning"
+   ],
+   "files": [
+    "note_棚_raw_2026-11-14_2331.csv"
+   ]
   }
  ]
 }
