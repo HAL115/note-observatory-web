@@ -179,6 +179,17 @@
    "files": [
     "data/raw/series/note_観測ログ_raw_2026-11-15_0109.csv"
    ]
+  },
+  {
+   "kind": "series",
+   "started": "2026-11-15 10:20",
+   "finished": "2026-11-15 10:20",
+   "pages": 12,
+   "items": 580,
+   "errors": [],
+   "files": [
+    "data/raw/series/note_観測ログ_raw_2026-11-15_1020.csv"
+   ]
   }
  ]
 }
