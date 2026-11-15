@@ -190,6 +190,19 @@
    "files": [
     "data/raw/series/note_観測ログ_raw_2026-11-15_1020.csv"
    ]
+  },
+  {
+   "kind": "scan",
+   "started": "2026-11-15 16:53",
+   "finished": "2026-11-15 16:55",
+   "pages": 15,
+   "items": 1360,
+   "errors": [
+    "M&A: HTTP 404 https://note.com/hashtag/M%26A"
+   ],
+   "files": [
+    "note_タグ探し_raw_2026-11-15_1653.csv"
+   ]
   }
  ]
 }
