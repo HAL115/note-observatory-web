@@ -204,6 +204,8 @@ def _note_row(n: dict) -> dict | None:
         "price_num": price,
         "author": user,
         "nickname": ((n.get("user") or {}).get("nickname") or "").replace(",", "，"),
+        # 一覧を作った仕組みの名前（例 query_gtt_tag_notes_popular_v20261105）。並びの作り方が変わった日を知るのに使う
+        "source": str(n.get("recommendSource") or ""),
     }
 
 
@@ -296,6 +298,23 @@ class Status:
 SERIES_HEADER = ["observed_at_jst", "surface", "section", "rank", "url", "likes", "published_jst", "price", "title"]
 SHELF_HEADER = ["observed_at_jst", "category", "category_name", "section", "rank", "url", "likes", "age_h", "paid", "title"]
 SCAN_HEADER = ["observed_at_jst", "tag", "view", "page", "total", "rank", "url", "likes", "published_jst", "title", "text"]
+SOURCE_HEADER = ["observed_at_jst", "surface", "source", "items"]
+
+
+def source_rows(observed: str, label: str, notes: list[dict]) -> list[list]:
+    """1ページの記事が持つ「一覧を作った仕組みの名前」を数えて行にする（名前ごとに1行）。"""
+    cnt: dict[str, int] = {}
+    for n in notes:
+        k = n.get("source") or ""
+        cnt[k] = cnt.get(k, 0) + 1
+    return [[observed, label, k, v] for k, v in sorted(cnt.items(), key=lambda kv: -kv[1])]
+
+
+def write_sources(rows: list[list], stamp: str, out_dir: Path | None = None) -> Path | None:
+    if not rows:
+        return None
+    out_dir = out_dir or (config.ROOT / "data" / "raw" / "sources")
+    return _write_csv(out_dir / f"note_生成元_raw_{stamp}.csv", SOURCE_HEADER, rows)
 
 
 def series_tags() -> list[str]:
@@ -312,6 +331,7 @@ def collect_series(tags: list[str] | None = None, out_dir: Path | None = None, n
     observed, stamp = _stamp(now)
     st = Status("series", now)
     rows: list[list] = []
+    srcs: list[list] = []
     pages = 0
     for tag in tags:
         for new in (False, True):
@@ -327,12 +347,16 @@ def collect_series(tags: list[str] | None = None, out_dir: Path | None = None, n
                 notes = []
             pages += 1
             st.page(label, len(notes))
+            srcs += source_rows(observed, label, notes)
             for i, n in enumerate(notes, 1):
                 rows.append([observed, label, "", i, n["url"], n["likes"], n["published"], n["price"], n["title"]])
             pause()
     out_dir = out_dir or (config.ROOT / "data" / "raw" / "series")
     path = _write_csv(out_dir / f"note_観測ログ_raw_{stamp}.csv", SERIES_HEADER, rows)
     st.files.append(str(path.relative_to(config.ROOT)) if path.is_relative_to(config.ROOT) else path.name)
+    sp = write_sources(srcs, stamp, None if out_dir == config.ROOT / "data" / "raw" / "series" else out_dir.parent / "sources")
+    if sp:
+        st.files.append(str(sp.relative_to(config.ROOT)) if sp.is_relative_to(config.ROOT) else sp.name)
     st.save()
     if not rows:
         raise CollectError("1本も取れなかった: " + "; ".join(st.errors))

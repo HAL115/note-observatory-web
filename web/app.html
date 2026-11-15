@@ -176,6 +176,7 @@ svg .pt:hover circle,svg .pt:focus circle{stroke:var(--ink);stroke-width:2}
   </header>
   <nav class="tabs" id="tabs" aria-label="画面">
     <a href="#home" data-v="home">いまの狙い目</a>
+    <a href="#weather" data-v="weather">人気の天気</a>
     <a href="#cats" data-v="cats">カテゴリ</a>
     <a href="#words" data-v="words">棚の言葉</a>
     <a href="#tags" data-v="tags">タグ</a>
@@ -428,7 +429,7 @@ function viewHome() {
     ['スキの中央値', fmt(overall.likes_med), `真ん中の半分は ${fmt(overall.likes_q25)}〜${fmt(overall.likes_q75)}スキ`],
     ['有料', fmt(overall.paid_pct) + '<small>%</small>', '棚の記事のうち有料の割合'],
   ];
-  return `
+  return `${weatherBanner()}
   <section class="panel hi">
     <p style="font-size:15.5px;max-width:72ch">${lead}</p>
     <div class="tiles">${tiles.map(([k, v, h]) => `<div class="tile"><span class="k">${k}</span><span class="v">${v}</span><span class="h">${h}</span></div>`).join('')}</div>
@@ -1338,10 +1339,117 @@ function viewAbout() {
 }
 
 // ---------- 組み立て ----------
-const VIEWS = { home: viewHome, cats: viewCats, words: viewWords, tags: viewTags, timing: viewTiming, check: viewCheck, outline: viewOutline, mine: viewMine, proof: viewProof, about: viewAbout };
+
+// ---------- 画面：人気の天気 ----------
+const WSTATE = {
+  frozen: ['bad', '凍結中', '人気の一覧がほとんど入れかわっていません'],
+  flowing: ['good', '流動中', '人気の一覧が毎回入れかわっています'],
+  switch: ['warn', '総入れ替え', 'この回で人気の一覧がほぼ全部変わりました'],
+  unknown: ['none', 'データ待ち', ''],
+};
+function weatherNow() {
+  const W = S.D.D.weather; if (!W || !W.state) return null;
+  const st = W.state; const [cls, label, desc] = WSTATE[st.state] || WSTATE.unknown;
+  return { W, st, cls, label, desc };
+}
+function weatherBanner() {
+  const w = weatherNow(); if (!w) return '';
+  const { st, cls, label } = w;
+  if (st.state === 'frozen') {
+    return `<section class="panel" style="border-color:var(--bad);background:var(--bad-soft)"><p class="small" style="margin:0"><span class="chip ${cls}">人気の一覧 ${label}</span>　${md(st.since)}から${fmt(st.days, 1)}日、6タグの人気上位20がほとんど入れかわっていません（前回との一致率 ${fmt((st.now.jac || 0) * 100)}%、新顔 ${fmt(st.now.new, 1)}本／回）。この画面の「狙い目」は人気に入る前提で作った点数なので、いまは<b>新着と棚の数字</b>で判断してください。くわしくは<a href="#weather">人気の天気</a>。</p></section>`;
+  }
+  if (st.state === 'switch') {
+    return `<section class="panel" style="border-color:var(--warn);background:var(--warn-soft)"><p class="small" style="margin:0"><span class="chip ${cls}">人気の一覧 ${label}</span>　${md(st.run)}の回で、人気の上位がほぼ全部入れかわりました。並びが作り直された直後は、公開から日の浅い記事が入りやすい時期です。<a href="#weather">人気の天気</a></p></section>`;
+  }
+  return '';
+}
+function weatherChip() {
+  const w = weatherNow(); if (!w) return '';
+  return `<span>人気の一覧 <b class="chip ${w.cls}" style="vertical-align:middle">${w.label}</b>${w.st.state === 'frozen' ? `（${md(w.st.since).split(' ')[0]}〜）` : ''}</span>`;
+}
+function viewWeather() {
+  const w = weatherNow();
+  if (!w) return '<section class="panel"><p class="empty">人気の一覧を同じ時刻に4タグ以上見た回がまだありません。</p></section>';
+  const { W, st, cls, label, desc } = w;
+  const runs = W.runs || [];
+  const B = st.before, A = st.after, N = st.now;
+  const tile = (k, v, unit, h) => `<div class="tile"><span class="k">${k}</span><span class="v">${v}${unit ? `<small>${unit}</small>` : ''}</span><span class="h">${h}</span></div>`;
+  const cmp = (k, d = 0) => B && isNum(B[k]) ? `切替前の平均 ${fmt(B[k], d)}` : '比べる回がまだ少ない';
+  const tiles = [
+    tile('2タグ以上に出る記事', fmt(N.dup2), '本', `6タグの上位20（最大120本）のうち。${cmp('dup2', 1)}`),
+    tile('3タグ以上に出る記事', fmt(N.dup3), '本', cmp('dup3', 1)),
+    tile('前回との一致率', fmt((N.jac || 0) * 100), '%', `上位20の顔ぶれ。${B && isNum(B.jac) ? `切替前の平均 ${fmt(B.jac * 100)}%` : ''}`),
+    tile('新顔', fmt(N.new, 1), '本／回', `1タグあたり、前回いなかった記事。${cmp('new', 1)}`),
+    tile('同じ書き手の重複', fmt(N.author_dup), '本', `上位20に同じ人の記事が2本以上ある数（6タグ合計）。${cmp('author_dup', 1)}`),
+    tile('上位のスキの伸び', isNum(N.gain_day) ? fmt(N.gain_day, 1) : '—', 'スキ／日', `前回から残った記事の、1日あたりの増え方（中央値）。${cmp('gain_day', 1)}`),
+  ];
+  const headline = st.state === 'frozen'
+    ? `人気の一覧は <b>${md(st.since)}</b> から入れかわっていません（${fmt(st.days, 1)}日）`
+    : st.state === 'switch' ? `<b>${md(st.run)}</b> の回で、人気の一覧がほぼ全部入れかわりました`
+    : `人気の一覧は動いています（${md(st.run)}）`;
+  const dist = isNum(st.distinct_10d) ? `<div><b>上位20に入った記事の種類</b>　直近10日は1タグあたり <b>${fmt(st.distinct_10d, 1)}本</b>（その前の10日は ${fmt(st.distinct_prev10d, 1)}本）。少ないほど、同じ記事が居座っています。</div>` : '';
+  const src = W.sources && Object.keys(W.sources).length ? `<div><b>一覧を作った仕組みの名前</b>　${Object.entries(W.sources).map(([k, v]) => `${k === 'tag' ? '人気' : k === 'tagnew' ? '新着' : esc(k)}：<code>${esc(v.latest)}</code>（${md(v.latest_at)}）${v.changes.length > 1 ? `　変わった日：${v.changes.slice(1).map(c => md(c.from).split(' ')[0]).join('・')}` : ''}`).join('<br>')}<br><span class="tiny">ページに埋め込まれたデータに入っている名前です。末尾の日付（v20261105 など）が変わったら、並びの作り方が変わった合図と見ています。名前が変わらなくても中の重みは変わり得ます。</span></div>`
+    : `<div class="tiny">一覧を作った仕組みの名前（ページに埋め込まれた v2026xxxx 形式の名前）は、次の観測から記録します。</div>`;
+  const advice = st.state === 'frozen' ? `
+      <div><b>人気の上位を狙う施策は、いったん止める</b>　枠が空いていません。タグ選びや公開時刻で人気に入ろうとしても、入れかわりが${fmt(N.new, 1)}本／回では順番が回ってきません。</div>
+      <div><b>勝負の場を新着・カテゴリの棚・検索に移す</b>　新着のページは普通に流れています（各回ほぼ全部が公開24時間以内）。新着は時刻順なので、同じ時間帯に出る本数との勝負です。「出す時刻」の画面で、出ている本数の少ない時台を確かめてください。</div>
+      <div><b>固定が解けた瞬間に、日の浅い記事を持っている</b>　前回の総入れ替え（${md(st.last_switch)}）で上位に入った記事は、公開から2週間以内のものが7割でした。並びが作り直されるときに拾われるのは、その時点で新しくてスキが付いている記事です。週に1本、同じ質で出し続けるのが準備になります。</div>
+      <div><b>スキの数で記事を測らない</b>　固定された上位は1日あたり中央値${fmt(A && A.gain_day, 0)}スキ前後の伸びで、新着の記事（公開12〜24時間でスキ中央値6）と桁が違います。いまのスキ数は露出の量で、中身の良さではありません。</div>` : st.state === 'switch' ? `
+      <div><b>いまが入りやすい</b>　並びが作り直された直後は、公開から日の浅くてスキの付いている記事が拾われます。出せる記事があるなら、この1〜2日のうちに出してください。</div>` : `
+      <div><b>人気は毎回入れかわっています</b>　「いまの狙い目」の点数（入口の低さ・入れかわり・読者の厚み）がそのまま使えます。</div>`;
+  return `
+  <section class="panel hi">
+    <div class="head"><h2>${headline}</h2><span class="chip ${cls}">${label}</span></div>
+    <p class="small muted" style="margin:4px 0 10px">${desc}。${W.tags.map(t => '#' + esc(t)).join('・')} の人気上位20を、同じ時刻に見た${fmt(runs.length)}回から。他の書き手の記事名やURLは出しません。数字だけです。</p>
+    <div class="tiles">${tiles.join('')}</div>
+  </section>
+  <section class="panel">
+    <div class="head"><h2>回ごとの、前回との一致率と新顔</h2><span class="tiny">一致率（上の線、%）が${fmt(W.thresholds.frozen_jac * 100)}%以上で新顔が1.5本以下なら凍結、${fmt(W.thresholds.switch_jac * 100)}%未満なら総入れ替え</span></div>
+    <div class="scroll">${weatherSvg(runs, W.thresholds)}</div>
+    <p class="tiny">${st.switches.length ? `総入れ替えがあった回：${st.switches.map(md).join('、')}` : '総入れ替えはまだ観測していません'}。10月の回の一部はスキが取れていないため、スキの伸びは出していません。</p>
+  </section>
+  <div class="grid2">
+    <section class="panel"><h2>何が起きていると見ているか</h2><div class="guide">
+      <div><b>並びが固定され、入れかわらなくなった</b>　${A ? `切替後の前回との一致率は平均${fmt(A.jac * 100)}%、新顔は${fmt(A.new, 1)}本／回（切替前は${B ? `${fmt(B.jac * 100)}%・${fmt(B.new, 1)}本` : '—'}）。` : ''}</div>
+      <div><b>同じ記事が複数タグの上位に出る</b>　${A ? `2タグ以上に出る記事が平均${fmt(A.dup2, 1)}本（切替前${B ? fmt(B.dup2, 1) : '—'}本）。` : ''}タグごとではなく記事ごとに評価して、合うタグの上位にまとめて置いていると見ています。</div>
+      <div><b>1人1本</b>　${A ? `切替後、同じ書き手の記事が上位20に2本以上入った数は${fmt(A.author_dup, 1)}本（切替前は${B ? fmt(B.author_dup, 1) : '—'}本）。` : ''}同じ人の記事は1本しか候補にしていないと見ています。</div>
+      ${dist}
+      <div><b>露出がスキを積み上げ、さらに固定される</b>　${A && isNum(A.gain_day) ? `上位に残った記事のスキは1日あたり中央値で${fmt(A.gain_day, 0)}前後増えています。` : ''}スキを集めた記事が上位に残り、上位にいるからスキが集まる、という向きの力が働いています。私は、評価の中身が変わったというより、評価を更新する頻度か、更新で動く幅が小さくなったと見ています。</div>
+      <div class="tiny">確かめられないこと：点数の付け方、初日の評価の扱い、紹介リンクの効き方。ここに書いた以上のことは、この観測からは言えません。</div>
+    </div></section>
+    <section class="panel"><h2>いま、どう動くか</h2><div class="guide">${advice}</div>${src}</section>
+  </div>`;
+}
+function weatherSvg(runs, th) {
+  if (!runs.length) return '<p class="empty">まだありません。</p>';
+  const W = 760, H = 230, L = 40, R = 40, T = 14, B = 40; const n = runs.length; const xw = (W - L - R) / Math.max(1, n - 1);
+  const yJ = (v) => T + (1 - v) * (H - T - B); const maxNew = Math.max(2, ...runs.map(r => isNum(r.new) ? r.new : 0)); const yN = (v) => T + (1 - v / maxNew) * (H - T - B);
+  let o = svgOpen(W, H, '回ごとの、前回との一致率と新顔', 560);
+  [0, .5, 1].forEach(v => { o += `<line class="grid" x1="${L}" x2="${W - R}" y1="${yJ(v)}" y2="${yJ(v)}"/><text class="lbl" x="${L - 4}" y="${yJ(v) + 4}" text-anchor="end">${v * 100}%</text>`; });
+  o += `<line x1="${L}" x2="${W - R}" y1="${yJ(th.frozen_jac)}" y2="${yJ(th.frozen_jac)}" stroke="var(--bad)" stroke-dasharray="3 4" stroke-opacity=".6"/>`;
+  o += `<line x1="${L}" x2="${W - R}" y1="${yJ(th.switch_jac)}" y2="${yJ(th.switch_jac)}" stroke="var(--warn)" stroke-dasharray="3 4" stroke-opacity=".6"/>`;
+  [0, maxNew / 2, maxNew].forEach(v => { o += `<text class="lbl" x="${W - R + 4}" y="${yN(v) + 4}">${fmt(v, 1)}本</text>`; });
+  // 新顔（棒）
+  runs.forEach((r, i) => { if (!isNum(r.new)) return; const x = L + i * xw; const h = (H - B) - yN(r.new); o += `<rect x="${x - Math.max(1.5, xw * 0.3)}" y="${yN(r.new)}" width="${Math.max(3, xw * 0.6)}" height="${Math.max(0, h)}" fill="var(--accent)" fill-opacity=".35"><title>${esc(md(r.run))}\n新顔 ${fmt(r.new, 1)}本／タグ</title></rect>`; });
+  // 一致率（線）
+  const pts = runs.map((r, i) => isNum(r.jac) ? `${L + i * xw},${yJ(r.jac)}` : null).filter(Boolean);
+  o += `<polyline points="${pts.join(' ')}" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+  runs.forEach((r, i) => {
+    if (!isNum(r.jac)) return; const x = L + i * xw; const c = r.state === 'switch' ? 'var(--warn)' : r.state === 'frozen' ? 'var(--bad)' : 'var(--good)';
+    o += `<circle cx="${x}" cy="${yJ(r.jac)}" r="${r.state === 'switch' ? 5 : 3}" fill="${c}" data-tip="${esc(`${md(r.run)}\n一致率 ${fmt(r.jac * 100)}%・新顔 ${fmt(r.new, 1)}本／タグ\n2タグ以上に出る記事 ${r.dup2}本・同じ書き手の重複 ${r.author_dup}本${isNum(r.gain_day) ? `\n上位のスキの伸び ${fmt(r.gain_day, 1)}／日` : ''}\n${(WSTATE[r.state] || WSTATE.unknown)[1]}`)}"/>`;
+    if (r.state === 'switch') o += `<text x="${x}" y="${H - B + 28}" text-anchor="middle" font-size="11" fill="var(--warn)">総入れ替え</text>`;
+  });
+  // 日付
+  let lastDay = '';
+  runs.forEach((r, i) => { const d = md(r.run).split(' ')[0]; if (d !== lastDay && (i % Math.ceil(n / 12) === 0 || i === n - 1)) { o += `<text class="lbl" x="${L + i * xw}" y="${H - B + 14}" text-anchor="middle">${d}</text>`; lastDay = d; } });
+  o += `<text class="lbl" x="${L}" y="${H - 4}">● 緑：流動　● 赤：凍結　● 橙：総入れ替え　棒：新顔の本数（右の軸）</text>`;
+  return o + '</svg>';
+}
+
+const VIEWS = { home: viewHome, weather: viewWeather, cats: viewCats, words: viewWords, tags: viewTags, timing: viewTiming, check: viewCheck, outline: viewOutline, mine: viewMine, proof: viewProof, about: viewAbout };
 function status() {
   const D = S.D.D; const cv = D.coverage || {};
-  return `<span>データ更新 <b>${md(D.generated_at)}</b></span><span>カテゴリの棚 <b>${baseLabel(S.D.C)}</b></span>${cv.series ? `<span>定時観測 <b>${cv.series.runs}回</b>（${md(cv.series.from).split(' ')[0]}〜${md(cv.series.to).split(' ')[0]}）</span>` : ''}`;
+  return `<span>データ更新 <b>${md(D.generated_at)}</b></span>${weatherChip()}<span>カテゴリの棚 <b>${baseLabel(S.D.C)}</b></span>${cv.series ? `<span>定時観測 <b>${cv.series.runs}回</b>（${md(cv.series.from).split(' ')[0]}〜${md(cv.series.to).split(' ')[0]}）</span>` : ''}`;
 }
 function render() {
   if (!S.D) return;

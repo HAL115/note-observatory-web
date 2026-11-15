@@ -176,8 +176,12 @@ def leaks(con, html: str, own_account: str) -> list[str]:
     for t in titles:
         if t.strip() in words:
             continue
-        if t[:20] in html:
-            found.append("タイトル: " + t[:20])
+        head = t[:20]
+        # 棚の言葉を括弧で囲っただけの先頭（「30 MUSIC CHALLENGE」など）は、言葉として出ているので数えない
+        if head.strip("「」『』【】（）()\"' 　") in words:
+            continue
+        if head in html:
+            found.append("タイトル: " + head)
     return found
 
 
@@ -1051,6 +1055,179 @@ def shelf_plan(con, n: int = 10) -> list[tuple[str, str]]:
     return [(r["tag"], r["name"] or r["tag"]) for r in rows[:n]]
 
 
+
+# ---------------------------------------------------------------- 人気面の天気
+
+def _series6() -> list[str]:
+    for g in config.load("tags").get("groups", []):
+        if g.get("id") == "series6":
+            return list(g["tags"])
+    return []
+
+
+def _jaccard(a: set, b: set) -> float | None:
+    u = a | b
+    return len(a & b) / len(u) if u else None
+
+
+def _med(vals: list) -> float | None:
+    v = sorted(x for x in vals if x is not None)
+    if not v:
+        return None
+    mid = len(v) // 2
+    return v[mid] if len(v) % 2 else (v[mid - 1] + v[mid]) / 2
+
+
+def _mean(vals: list) -> float | None:
+    v = [x for x in vals if x is not None]
+    return sum(v) / len(v) if v else None
+
+
+FROZEN_JAC = 0.85     # 前回との一致率がこれ以上で、新顔が1.5本以下なら「凍結」
+SWITCH_JAC = 0.30     # これ未満なら「総入れ替え」
+
+
+def weather_state(jac: float | None, new: float | None) -> str:
+    if jac is None:
+        return "unknown"
+    if jac < SWITCH_JAC:
+        return "switch"
+    if jac >= FROZEN_JAC and (new is None or new <= 1.5):
+        return "frozen"
+    return "flowing"
+
+
+def popular_sources() -> dict:
+    """data/raw/sources/ の CSV から、人気・新着の一覧を作った仕組みの名前と、それが変わった日を拾う。"""
+    import csv
+    folder = config.ROOT / "data" / "raw" / "sources"
+    hist: dict[str, list[tuple[str, str]]] = {}
+    if folder.exists():
+        for path in sorted(folder.glob("*.csv")):
+            try:
+                rows = list(csv.DictReader(path.open(encoding="utf-8")))
+            except (OSError, UnicodeDecodeError):
+                continue
+            best: dict[str, tuple[int, str, str]] = {}
+            for r in rows:
+                sur = (r.get("surface") or "").split(":")[0]
+                try:
+                    n = int(r.get("items") or 0)
+                except ValueError:
+                    n = 0
+                if n > best.get(sur, (-1, "", ""))[0]:
+                    best[sur] = (n, r.get("source") or "", r.get("observed_at_jst") or "")
+            for sur, (_, src, at) in best.items():
+                hist.setdefault(sur, []).append((at, src))
+    out = {}
+    for sur, seq in hist.items():
+        seq.sort()
+        changes = []
+        for at, src in seq:
+            if not changes or changes[-1]["source"] != src:
+                changes.append({"from": at, "source": src})
+        out[sur] = {"latest": seq[-1][1], "latest_at": seq[-1][0], "changes": changes[-6:], "runs": len(seq)}
+    return out
+
+
+def popular_weather(con, tags: list[str] | None = None, keep: int = 120) -> dict:
+    """6タグの人気上位20が、回ごとにどれだけ入れかわっているか（他の書き手の記事名やURLは出さない）。
+
+    出すのは回ごとの数字だけ：2タグ以上に重複して出る記事の本数、3タグ以上、前回との一致率、
+    1タグあたりの新顔、同じ書き手の重複、スキの伸び（1日あたり・中央値）、状態（凍結／流動／総入れ替え）。
+    """
+    tags = tags or _series6()
+    if not tags:
+        return {"runs": [], "state": None, "tags": []}
+    q = ",".join("?" * len(tags))
+    runs = [r[0] for r in con.execute(
+        f"SELECT DISTINCT run_at FROM obs WHERE kind='series' AND surface='popular' AND tag IN ({q}) ORDER BY run_at", tags)]
+    prev: dict[str, dict] = {}
+    prev_run = None
+    out: list[dict] = []
+    for run in runs:
+        rows = con.execute(
+            f"SELECT tag, url, author, likes FROM obs WHERE kind='series' AND surface='popular' AND run_at=? AND tag IN ({q}) AND rank<=20",
+            [run] + tags).fetchall()
+        lists: dict[str, dict] = {}
+        for t, u, a, l in rows:
+            lists.setdefault(t, {})[u] = (a, l)
+        if len(lists) < 4:
+            continue
+        cnt: dict[str, int] = {}
+        for t in lists:
+            for u in lists[t]:
+                cnt[u] = cnt.get(u, 0) + 1
+        dup2 = sum(1 for c in cnt.values() if c >= 2)
+        dup3 = sum(1 for c in cnt.values() if c >= 3)
+        adup = 0
+        for t in lists:
+            authors = [a for a, _ in lists[t].values()]
+            adup += len(authors) - len(set(authors))
+        jac, new, gains = [], [], []
+        if prev_run:
+            hours = (dt.datetime.strptime(run, "%Y-%m-%d %H:%M") - dt.datetime.strptime(prev_run, "%Y-%m-%d %H:%M")).total_seconds() / 3600
+            for t in lists:
+                if t in prev:
+                    a, b = set(lists[t]), set(prev[t])
+                    jac.append(_jaccard(a, b))
+                    new.append(len(a - b))
+                    if hours >= 6:
+                        for u in a & b:
+                            l1, l0 = lists[t][u][1], prev[t][u][1]
+                            if isinstance(l1, int) and isinstance(l0, int):
+                                gains.append((l1 - l0) / hours * 24)
+        j, n = _mean(jac), _mean(new)
+        out.append({"run": run, "tags": len(lists), "dup2": dup2, "dup3": dup3, "author_dup": adup,
+                    "jac": round(j, 3) if j is not None else None, "new": round(n, 2) if n is not None else None,
+                    "gain_day": round(_med(gains), 1) if gains else None, "state": weather_state(j, n)})
+        prev, prev_run = lists, run
+    out = out[-keep:]
+    # いまの状態と、いつからか
+    state = None
+    if out:
+        cur = out[-1]
+        since = cur["run"]
+        for r in reversed(out):
+            if r["state"] == "switch":
+                since = r["run"]
+                break
+            if r["state"] != cur["state"] and r["state"] != "unknown":
+                break
+            since = r["run"]
+        switches = [r["run"] for r in out if r["state"] == "switch"]
+        # 直近の総入れ替えを境に、その前（前の総入れ替えより後）と後を比べる
+        last_switch = switches[-1] if switches else None
+        prev_switch = switches[-2] if len(switches) >= 2 else None
+        before = [r for r in out if last_switch and r["run"] < last_switch and (not prev_switch or r["run"] > prev_switch) and r["jac"] is not None]
+        after = [r for r in out if last_switch and r["run"] > last_switch]
+        def avg(rows, k):
+            v = _mean([r[k] for r in rows if r.get(k) is not None])
+            return round(v, 2) if v is not None else None
+        state = {
+            "state": cur["state"], "since": since, "run": cur["run"],
+            "days": round((dt.datetime.strptime(cur["run"], "%Y-%m-%d %H:%M") - dt.datetime.strptime(since, "%Y-%m-%d %H:%M")).total_seconds() / 86400, 1),
+            "switches": switches[-5:], "last_switch": last_switch,
+            "before": {k: avg(before, k) for k in ("dup2", "dup3", "jac", "new", "author_dup", "gain_day")} if before else None,
+            "after": {k: avg(after, k) for k in ("dup2", "dup3", "jac", "new", "author_dup", "gain_day")} if after else None,
+            "now": {k: cur.get(k) for k in ("dup2", "dup3", "jac", "new", "author_dup", "gain_day")},
+        }
+        # 直近10日に上位20へ入った記事の種類数と、その前の10日（タグごとの平均）
+        if len(out) >= 4:
+            last = dt.datetime.strptime(cur["run"], "%Y-%m-%d %H:%M")
+            def distinct(lo, hi):
+                vals = []
+                for t in tags:
+                    n = con.execute("SELECT COUNT(DISTINCT url) FROM obs WHERE kind='series' AND surface='popular' AND tag=? AND rank<=20 AND run_at>? AND run_at<=?",
+                                    (t, lo.strftime("%Y-%m-%d %H:%M"), hi.strftime("%Y-%m-%d %H:%M"))).fetchone()[0]
+                    vals.append(n)
+                return round(_mean(vals), 1)
+            state["distinct_10d"] = distinct(last - dt.timedelta(days=10), last)
+            state["distinct_prev10d"] = distinct(last - dt.timedelta(days=20), last - dt.timedelta(days=10))
+    return {"runs": out, "state": state, "tags": tags, "sources": popular_sources(),
+            "thresholds": {"frozen_jac": FROZEN_JAC, "switch_jac": SWITCH_JAC}}
+
+
 def app_data(con) -> dict:
     p = payload(con, "members")
     seen, places = app_seen(con)
@@ -1089,6 +1266,7 @@ def app_data(con) -> dict:
         "nodes": node_compare(),
         "scoring": _opt_config("scoring"),           # 観測のタスクは config/scoring.json を取り込まない
         "scoring_weeks": _opt_json("scoring_weeks.json"),
+        "weather": popular_weather(con),
         "salt": APP_SALT,
         "places": places,
         "seen": seen,
