@@ -320,6 +320,17 @@
    "files": [
     "note_タグ探し_raw_2026-11-18_1735.csv"
    ]
+  },
+  {
+   "kind": "shelf",
+   "started": "2026-11-19 01:43",
+   "finished": "2026-11-19 01:43",
+   "pages": 10,
+   "items": 459,
+   "errors": [],
+   "files": [
+    "note_棚_raw_2026-11-19_0143.csv"
+   ]
   }
  ]
 }
