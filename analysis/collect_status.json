@@ -413,6 +413,20 @@
     "data/raw/series/note_観測ログ_raw_2026-11-21_0301.csv",
     "data/raw/sources/note_生成元_raw_2026-11-21_0301.csv"
    ]
+  },
+  {
+   "kind": "series",
+   "started": "2026-11-21 11:51",
+   "finished": "2026-11-21 11:52",
+   "pages": 12,
+   "items": 526,
+   "errors": [
+    "tagnew:note初心者: HTTP 503 https://note.com/tag/note%E5%88%9D%E5%BF%83%E8%80%85?mode=new"
+   ],
+   "files": [
+    "data/raw/series/note_観測ログ_raw_2026-11-21_1151.csv",
+    "data/raw/sources/note_生成元_raw_2026-11-21_1151.csv"
+   ]
   }
  ]
 }
