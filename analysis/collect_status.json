@@ -475,6 +475,19 @@
    "files": [
     "note_タグ探し_raw_2026-11-22_1702.csv"
    ]
+  },
+  {
+   "kind": "shelf",
+   "started": "2026-11-23 00:40",
+   "finished": "2026-11-23 00:41",
+   "pages": 10,
+   "items": 350,
+   "errors": [
+    "investment_money: initialData が見つからない（ページの形が変わったか、記事一覧が無い）"
+   ],
+   "files": [
+    "note_棚_raw_2026-11-23_0040.csv"
+   ]
   }
  ]
 }
