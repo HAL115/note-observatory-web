@@ -462,6 +462,19 @@
     "data/raw/series/note_観測ログ_raw_2026-11-22_1039.csv",
     "data/raw/sources/note_生成元_raw_2026-11-22_1039.csv"
    ]
+  },
+  {
+   "kind": "scan",
+   "started": "2026-11-22 17:02",
+   "finished": "2026-11-22 17:04",
+   "pages": 15,
+   "items": 1364,
+   "errors": [
+    "M&A: HTTP 404 https://note.com/hashtag/M%26A"
+   ],
+   "files": [
+    "note_タグ探し_raw_2026-11-22_1702.csv"
+   ]
   }
  ]
 }
