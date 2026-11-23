@@ -512,6 +512,19 @@
     "data/raw/series/note_観測ログ_raw_2026-11-23_1059.csv",
     "data/raw/sources/note_生成元_raw_2026-11-23_1059.csv"
    ]
+  },
+  {
+   "kind": "shelf",
+   "started": "2026-11-24 04:29",
+   "finished": "2026-11-24 04:29",
+   "pages": 10,
+   "items": 207,
+   "errors": [
+    "investment_money: initialData が見つからない（ページの形が変わったか、記事一覧が無い）"
+   ],
+   "files": [
+    "note_棚_raw_2026-11-24_0429.csv"
+   ]
   }
  ]
 }
