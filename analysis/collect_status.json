@@ -500,6 +500,18 @@
     "data/raw/series/note_観測ログ_raw_2026-11-23_0225.csv",
     "data/raw/sources/note_生成元_raw_2026-11-23_0225.csv"
    ]
+  },
+  {
+   "kind": "series",
+   "started": "2026-11-23 10:59",
+   "finished": "2026-11-23 11:00",
+   "pages": 12,
+   "items": 582,
+   "errors": [],
+   "files": [
+    "data/raw/series/note_観測ログ_raw_2026-11-23_1059.csv",
+    "data/raw/sources/note_生成元_raw_2026-11-23_1059.csv"
+   ]
   }
  ]
 }
