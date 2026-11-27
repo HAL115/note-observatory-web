@@ -661,6 +661,18 @@
     "data/raw/series/note_観測ログ_raw_2026-11-27_0418.csv",
     "data/raw/sources/note_生成元_raw_2026-11-27_0418.csv"
    ]
+  },
+  {
+   "kind": "series",
+   "started": "2026-11-27 12:49",
+   "finished": "2026-11-27 12:49",
+   "pages": 12,
+   "items": 565,
+   "errors": [],
+   "files": [
+    "data/raw/series/note_観測ログ_raw_2026-11-27_1249.csv",
+    "data/raw/sources/note_生成元_raw_2026-11-27_1249.csv"
+   ]
   }
  ]
 }
